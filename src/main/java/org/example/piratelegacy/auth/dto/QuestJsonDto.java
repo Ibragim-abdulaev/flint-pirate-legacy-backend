@@ -2,17 +2,19 @@ package org.example.piratelegacy.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
-public class QuestDto {
-    private Long id;
+@NoArgsConstructor
+@Data
+public class QuestJsonDto {
     private String title;
     private String description;
     private String npcName;
     private String npcImageUrl;
-    private boolean isCompleted;
     private Long goldReward;
     private Long expReward;
     private String buttonText;
+    private Integer questOrder;
+    private boolean isActive;
 }

@@ -10,8 +10,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "user_pirates")
-public class Pirate {
+@Table(name = "user_heroes")
+public class Hero {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class Pirate {
     private int level = 1;
 
     @Column(nullable = false)
-    private String pirateClass; // "MELEE" или "RANGED"
+    private String heroClass; // "MELEE" или "RANGED"
 
     @Column(nullable = false)
     private String characterType; // тип персонажа (BARBARIAN, ARCHER, и т.д.)

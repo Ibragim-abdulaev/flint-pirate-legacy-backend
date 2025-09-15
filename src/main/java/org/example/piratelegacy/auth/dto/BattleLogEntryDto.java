@@ -1,15 +1,20 @@
 package org.example.piratelegacy.auth.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class BattleLogEntry {
-    private String attackerTeam;
-    private Long attackerId;
-    private String targetTeam;
-    private Long targetId;
+public class BattleLogEntryDto {
+    private String attackerId;
+    private String targetId;
     private int damage;
-    private int targetHpAfter;
+    private boolean targetDead;
+
+    public BattleLogEntryDto(String attackerId, String targetId, int damage, boolean targetDead) {
+        this.attackerId = attackerId;
+        this.targetId = targetId;
+        this.damage = damage;
+        this.targetDead = targetDead;
+    }
+
+    public String getAttackerId() { return attackerId; }
+    public String getTargetId() { return targetId; }
+    public int getDamage() { return damage; }
+    public boolean isTargetDead() { return targetDead; }
 }

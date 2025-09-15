@@ -1,2 +1,14 @@
-package org.example.piratelegacy.auth.dto;public class BattleFieldDto {
+package org.example.piratelegacy.auth.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class BattleFieldDto {
+    private List<BattlePirateDto> pirates;
 }
