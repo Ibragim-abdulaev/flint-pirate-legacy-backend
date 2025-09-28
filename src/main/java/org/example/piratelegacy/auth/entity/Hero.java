@@ -3,6 +3,7 @@ package org.example.piratelegacy.auth.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.piratelegacy.auth.entity.enums.CombatClass;
 
 @Getter
 @Setter
@@ -23,11 +24,12 @@ public class Hero {
     @Column(nullable = false)
     private int level = 1;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String heroClass; // "MELEE" или "RANGED"
+    private CombatClass heroClass;
 
     @Column(nullable = false)
-    private String characterType; // тип персонажа (BARBARIAN, ARCHER, и т.д.)
+    private String characterType;
 
     @Column(nullable = false)
     private int minAttack = 10;
@@ -42,7 +44,7 @@ public class Hero {
     private int armor = 0;
 
     @Column(name = "special_ability")
-    private String specialAbility; // описание спецспособности
+    private String specialAbility;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")

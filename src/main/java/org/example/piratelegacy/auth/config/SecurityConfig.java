@@ -1,10 +1,12 @@
-package org.example.piratelegacy.auth.security;
+package org.example.piratelegacy.auth.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.piratelegacy.auth.security.JwtAuthenticationFilter;
 import org.example.piratelegacy.auth.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+@EnableScheduling
 @RequiredArgsConstructor
 public class SecurityConfig {
 

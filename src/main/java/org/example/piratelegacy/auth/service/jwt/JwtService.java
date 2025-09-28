@@ -1,4 +1,4 @@
-package org.example.piratelegacy.auth.service;
+package org.example.piratelegacy.auth.service.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -63,5 +63,9 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public Date extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration();
     }
 }

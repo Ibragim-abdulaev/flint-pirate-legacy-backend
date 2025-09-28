@@ -1,10 +1,11 @@
 package org.example.piratelegacy.auth.entity;
 
 import org.example.piratelegacy.auth.dto.BattlePirateDto;
+import org.example.piratelegacy.auth.entity.enums.TeamType;
 
 public class BattlePirate {
     private String id;
-    private String team; // "ALLY" или "ENEMY"
+    private TeamType team;
     private int hp;
     private int minAttack;
     private int maxAttack;
@@ -20,7 +21,7 @@ public class BattlePirate {
     }
 
     public String getId() { return id; }
-    public String getTeam() { return team; }
+    public TeamType getTeam() { return team; }
     public int getHp() { return hp; }
     public int getMinAttack() { return minAttack; }
     public int getMaxAttack() { return maxAttack; }

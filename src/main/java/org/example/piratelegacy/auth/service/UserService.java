@@ -2,6 +2,7 @@ package org.example.piratelegacy.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.piratelegacy.auth.entity.User;
+import org.example.piratelegacy.auth.exception.ResourceNotFoundException;
 import org.example.piratelegacy.auth.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,10 @@ public class UserService {
 
     public User register(String username, String email, String rawPassword) {
         if (userRepository.existsByUsername(username)) {
-            throw new RuntimeException("Username already exists");
+            throw new IllegalStateException("Username already exists");
         }
         if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already exists");
+            throw new IllegalStateException("Email already exists");
         }
         User user = User.builder()
                 .username(username)
@@ -30,11 +31,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    }
+
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
-    // если где-то ещё используется
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }

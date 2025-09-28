@@ -2,11 +2,9 @@ package org.example.piratelegacy.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.piratelegacy.auth.entity.User;
+import org.example.piratelegacy.auth.security.annotation.CurrentUser;
 import org.example.piratelegacy.auth.service.PopupService;
-import org.example.piratelegacy.auth.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,16 +15,11 @@ import java.util.Map;
 public class PopupController {
 
     private final PopupService popupService;
-    private final UserService userService;
 
     @GetMapping("/should-show/{popupType}")
     public ResponseEntity<Map<String, Boolean>> shouldShowPopup(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @CurrentUser User user,
             @PathVariable("popupType") String popupType) {
-
-        Long userId = Long.valueOf(userDetails.getUsername());
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         try {
             PopupService.PopupType popup = PopupService.PopupType.valueOf(popupType.toUpperCase());
@@ -39,12 +32,8 @@ public class PopupController {
 
     @PostMapping("/mark-shown/{popupType}")
     public ResponseEntity<Map<String, String>> markPopupShown(
-            @AuthenticationPrincipal UserDetails userDetails,
+            @CurrentUser User user,
             @PathVariable("popupType") String popupType) {
-
-        Long userId = Long.valueOf(userDetails.getUsername());
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         try {
             PopupService.PopupType popup = PopupService.PopupType.valueOf(popupType.toUpperCase());
@@ -56,11 +45,7 @@ public class PopupController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<Map<String, Boolean>> getPopupStatuses(@AuthenticationPrincipal UserDetails userDetails) {
-        Long userId = Long.valueOf(userDetails.getUsername());
-        User user = userService.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public ResponseEntity<Map<String, Boolean>> getPopupStatuses(@CurrentUser User user) {
         Map<String, Boolean> statuses = Map.of(
                 "welcome", popupService.shouldShowPopup(user, PopupService.PopupType.WELCOME),
                 "firstQuest", popupService.shouldShowPopup(user, PopupService.PopupType.FIRST_QUEST)

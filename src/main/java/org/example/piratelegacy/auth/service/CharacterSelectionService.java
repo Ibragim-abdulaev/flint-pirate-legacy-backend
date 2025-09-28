@@ -2,7 +2,7 @@ package org.example.piratelegacy.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.piratelegacy.auth.dto.CharacterSelectionRequest;
-import org.example.piratelegacy.auth.entity.CharacterType;
+import org.example.piratelegacy.auth.entity.enums.CharacterType;
 import org.example.piratelegacy.auth.entity.Hero;
 import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.repository.HeroRepository;
