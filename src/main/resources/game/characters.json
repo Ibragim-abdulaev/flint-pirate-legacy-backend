@@ -1,0 +1,72 @@
+[
+  {
+    "characterType": "BARBARIAN",
+    "displayName": "Варвар",
+    "combatClass": "MELEE",
+    "baseHp": 300,
+    "minAttack": 20,
+    "maxAttack": 30,
+    "baseArmor": 6,
+    "specialAbility": null
+  },
+  {
+    "characterType": "ARCHER",
+    "displayName": "Лучница",
+    "combatClass": "RANGED",
+    "baseHp": 250,
+    "minAttack": 35,
+    "maxAttack": 45,
+    "baseArmor": 4,
+    "specialAbility": null
+  },
+  {
+    "characterType": "VALKYRIE",
+    "displayName": "Валькирия",
+    "combatClass": "MELEE",
+    "baseHp": 500,
+    "minAttack": 70,
+    "maxAttack": 90,
+    "baseArmor": 10,
+    "specialAbility": "Критический удар – наносит в два раза больше урона по врагу от максимального урона"
+  },
+  {
+    "characterType": "GUNNER",
+    "displayName": "Канонир",
+    "combatClass": "RANGED",
+    "baseHp": 700,
+    "minAttack": 120,
+    "maxAttack": 140,
+    "baseArmor": 15,
+    "specialAbility": "Шквал огня – поражает всех врагов в радиусе атаки максимально возможным уроном"
+  },
+  {
+    "characterType": "GLADIATOR",
+    "displayName": "Гладиатор",
+    "combatClass": "MELEE",
+    "baseHp": 1000,
+    "minAttack": 100,
+    "maxAttack": 120,
+    "baseArmor": 20,
+    "specialAbility": "Оглушающий удар – оглушает врага физическим ударом на 3 секунды"
+  },
+  {
+    "characterType": "GRENADIER",
+    "displayName": "Гренадер",
+    "combatClass": "RANGED",
+    "baseHp": 900,
+    "minAttack": 140,
+    "maxAttack": 180,
+    "baseArmor": 15,
+    "specialAbility": "Минирование – под врагом взрывается бочка с порохом, нанося врагу в 3 раза больше урона от максимального"
+  },
+  {
+    "characterType": "SHAMAN",
+    "displayName": "Шаман",
+    "combatClass": "RANGED",
+    "baseHp": 800,
+    "minAttack": 180,
+    "maxAttack": 200,
+    "baseArmor": 10,
+    "specialAbility": "Сфера льда – замораживает врага, лишая способности двигаться 5 секунд"
+  }
+]

@@ -2,10 +2,14 @@ package org.example.piratelegacy.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
-public class ErrorResponse {
+@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@NoArgsConstructor
+public class ErrorResponse implements Serializable {
     private int statusCode;
     private String message;
     private long timestamp;

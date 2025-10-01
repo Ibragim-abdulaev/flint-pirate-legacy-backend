@@ -1,24 +1,30 @@
 package org.example.piratelegacy.auth.service;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.entity.UserPopup;
 import org.example.piratelegacy.auth.repository.UserPopupRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j // <-- ДОБАВЛЕНО для логирования
 @Service
 @RequiredArgsConstructor
 public class PopupService {
 
     private final UserPopupRepository userPopupRepository;
 
+    @Getter
     public enum PopupType {
-        WELCOME("WELCOME"),           // Приветственный попап со Старым Флинтом
-        FIRST_QUEST("FIRST_QUEST");   // Первый квест (отбить трактирщика)
+        WELCOME("WELCOME"),
+        FIRST_QUEST("FIRST_QUEST");
 
         private final String value;
 
@@ -26,32 +32,37 @@ public class PopupService {
             this.value = value;
         }
 
-        public String getValue() {
-            return value;
-        }
     }
 
-    /**
-     * Проверяет, нужно ли показать указанный попап пользователю
-     */
     @Transactional(readOnly = true)
+    @Cacheable(value = "popups", key = "#user.id + ':' + #popupType.name()")
     public boolean shouldShowPopup(User user, PopupType popupType) {
-        return !userPopupRepository.existsByUserIdAndPopupTypeAndIsShownTrue(user.getId(), popupType.getValue());
+        log.info("ПРОВЕРКА СТАТУСА: Пользователь ID [{}], тип попапа [{}].", user.getId(), popupType.getValue());
+        boolean shown = userPopupRepository.existsByUserIdAndPopupTypeAndIsShownTrue(user.getId(), popupType.getValue());
+        log.info("--> РЕЗУЛЬТАТ: Попап уже был показан? {}. Значит, нужно ли показать сейчас? {}", shown, !shown);
+        return !shown;
     }
 
-    /**
-     * Отмечает попап как показанный
-     */
     @Transactional
+    @CacheEvict(value = "popups", key = "#user.id + ':' + #popupType.name()")
     public void markPopupAsShown(User user, PopupType popupType) {
+        log.info("ПОПЫТКА ОТМЕТИТЬ ПОКАЗАННЫМ: Пользователь ID [{}], тип попапа [{}].", user.getId(), popupType.getValue());
+
         Optional<UserPopup> existingPopup = userPopupRepository.findByUserIdAndPopupType(user.getId(), popupType.getValue());
 
         if (existingPopup.isPresent()) {
             UserPopup popup = existingPopup.get();
+            if (popup.isShown()) {
+                log.warn("--> ВНИМАНИЕ: Попап [{}] для пользователя ID [{}] уже был отмечен как показанный. Новых изменений не будет.", popupType.getValue(), user.getId());
+                return;
+            }
+            log.info("--> Найден существующий попап. Обновляем isShown на true.");
             popup.setShown(true);
             popup.setShownAt(LocalDateTime.now());
             userPopupRepository.save(popup);
+            log.info("--> УСПЕШНО СОХРАНЕНО: Попап [{}] для пользователя ID [{}] отмечен как показанный.", popupType.getValue(), user.getId());
         } else {
+            log.warn("--> ВНИМАНИЕ: Для пользователя ID [{}] не найдена запись о попапе [{}]. Создаем новую запись и сразу отмечаем ее показанной.", user.getId(), popupType.getValue());
             UserPopup newPopup = UserPopup.builder()
                     .user(user)
                     .popupType(popupType.getValue())
@@ -63,15 +74,12 @@ public class PopupService {
         }
     }
 
-    /**
-     * Инициализирует записи попапов для нового пользователя (не показанными)
-     */
     @Transactional
     public void initializePopupsForUser(User user) {
+        log.info("Инициализация попапов для нового пользователя ID [{}].", user.getId());
         for (PopupType popupType : PopupType.values()) {
-            Optional<UserPopup> existingPopup = userPopupRepository.findByUserIdAndPopupType(user.getId(), popupType.getValue());
-
-            if (!existingPopup.isPresent()) {
+            boolean exists = userPopupRepository.findByUserIdAndPopupType(user.getId(), popupType.getValue()).isPresent();
+            if (!exists) {
                 UserPopup popup = UserPopup.builder()
                         .user(user)
                         .popupType(popupType.getValue())
@@ -79,8 +87,8 @@ public class PopupService {
                         .createdAt(LocalDateTime.now())
                         .build();
                 userPopupRepository.save(popup);
+                log.info("--> Создана запись для попапа [{}] для пользователя ID [{}].", popupType.getValue(), user.getId());
             }
         }
     }
 }
-

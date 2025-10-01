@@ -3,43 +3,67 @@ package org.example.piratelegacy.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "quests")
-public class Quest {
+@Table(name = "quests", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"quest_chain_id", "quest_order"})
+})
+public class Quest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "quest_chain_id", nullable = false)
+    private QuestChain questChain;
+
+    @Column(name = "quest_key", nullable = false, unique = true)
+    private String questKey;
+
+    @Column(name = "quest_order", nullable = false)
+    private Integer questOrder;
+
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 500)
-    private String description;
-
-    @Column(name = "npc_name", nullable = false)
+    @Column(name = "npc_name")
     private String npcName;
 
     @Column(name = "npc_image_url")
     private String npcImageUrl;
 
+    @Column(name = "story_text", columnDefinition = "TEXT")
+    private String storyText;
+
+    @Column(columnDefinition = "TEXT")
+    private String objective;
+
     @Column(name = "gold_reward")
-    private Long goldReward = 0L;
+    private Long goldReward;
 
     @Column(name = "exp_reward")
-    private Long expReward = 0L;
+    private Long expReward;
+
+    @Column(name = "wood_reward")
+    private Long woodReward;
+
+    @Column(name = "stone_reward")
+    private Long stoneReward;
 
     @Column(name = "button_text")
-    private String buttonText = "В путь";
+    private String buttonText;
 
-    @Column(name = "quest_order", nullable = false)
-    private Integer questOrder; // порядок квестов
+    @Column(name = "battle_location_id")
+    private String battleLocationId;
 
-    @Column(nullable = false)
-    private boolean isActive = true;
+    @OneToMany(mappedBy = "quest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuestItemReward> itemRewards;
 }

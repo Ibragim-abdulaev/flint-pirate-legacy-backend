@@ -1,0 +1,29 @@
+[
+  {
+    "chainKey": "main_storyline",
+    "title": "Сюжетная линия",
+    "description": "Основной сюжет игры, ведущий вас по миру приключений.",
+    "iconUrl": "/images/icons/story_map.png",
+    "type": "STORYLINE",
+    "steps": [
+      {
+        "questKey": "rescue_bartender_joe",
+        "questOrder": 1,
+        "title": "Отбить трактирщика Джо",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Эти свиньи смеют называть себя Пиратами? Джек Клешня - гнилой пес, его люди похитили Джо! Верни его, а их скорми рыбам!",
+        "objective": "Отбей трактирщика Джо",
+        "rewards": {
+          "gold": 0,
+          "experience": 400,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь",
+        "battleLocationId": "first_quest_location"
+      }
+    ]
+  }
+]

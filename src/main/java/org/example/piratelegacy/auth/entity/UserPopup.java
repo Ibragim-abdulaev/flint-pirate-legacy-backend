@@ -3,6 +3,7 @@ package org.example.piratelegacy.auth.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "user_popups")
-public class UserPopup {
+public class UserPopup implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
