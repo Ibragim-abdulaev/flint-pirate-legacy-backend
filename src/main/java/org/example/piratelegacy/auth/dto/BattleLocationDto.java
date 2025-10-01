@@ -4,16 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor; // Добавим NoArgsConstructor для удобства
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor // Добавим
-public class BattleLocationDto {
+@NoArgsConstructor
+public class BattleLocationDto implements Serializable {
     private String locationImageId;
     private List<BattlePirateDto> pirates;
-
-    // Новые поля для конфигурации сетки
     private int gridWidth;
     private int gridHeight;
     private List<CoordinateDto> blockedCells;

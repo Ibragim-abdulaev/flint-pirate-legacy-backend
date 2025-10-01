@@ -1,76 +1,83 @@
 package org.example.piratelegacy.auth.service;
 
-import org.example.piratelegacy.auth.dto.BattleLocationDto;
-import org.example.piratelegacy.auth.dto.BattlePirateDto;
-import org.example.piratelegacy.auth.dto.CoordinateDto;
-import org.example.piratelegacy.auth.dto.PirateMoveRequestDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.example.piratelegacy.auth.dto.*;
 import org.example.piratelegacy.auth.entity.enums.TeamType;
 import org.example.piratelegacy.auth.exception.InvalidMoveException;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class BattleLocationService {
 
-    private final Map<Long, BattleLocationDto> battleStates = new ConcurrentHashMap<>();
-    private static final int GRID_WIDTH = 15;
-    private static final int GRID_HEIGHT = 20;
-    private static final int ALLY_COUNT = 6;
-    private static final int ENEMY_COUNT = 4;
-    private static final int BASE_HP = 100;
-    private static final int MIN_ATTACK = 10;
-    private static final int MAX_ATTACK = 20;
-    private static final int ARMOR = 1;
-    private static final int BASE_MOVEMENT = 3;
-    private static final int ALLY_XP = 200;
-    private static final int ENEMY_XP = 120;
+    private final RedisService redisService;
+    private final BattleConfigService battleConfigService;
 
-    public BattleLocationDto getFirstQuestLocation(Long userId) {
-        if (battleStates.containsKey(userId)) {
-            return battleStates.get(userId);
+    private static final String BATTLE_STATE_KEY_PREFIX = "battle:state:";
+
+    private static final Duration BATTLE_STATE_TTL = Duration.ofHours(1);
+
+    private String getKeyForUser(Long userId) {
+        return BATTLE_STATE_KEY_PREFIX + userId;
+    }
+
+    public BattleLocationDto getOrCreateBattleLocation(Long userId, String locationId) {
+        String userKey = getKeyForUser(userId);
+
+        BattleLocationDto currentState = redisService.get(userKey, BattleLocationDto.class);
+        if (currentState != null) {
+            return currentState;
         }
 
-        List<CoordinateDto> blockedCells = getBlockedCells();
-        Set<CoordinateDto> blockedSet = new HashSet<>(blockedCells);
+        LocationConfig config = battleConfigService.getLocationConfig(locationId);
 
-        List<CoordinateDto> allyPlacementCells = generatePlacementZone(GRID_HEIGHT - 3, GRID_HEIGHT, blockedSet);
-        List<CoordinateDto> enemyPlacementCells = generatePlacementZone(0, 3, blockedSet);
+        Set<CoordinateDto> blockedSet = new HashSet<>(config.getBlockedCells());
+        List<CoordinateDto> allyPlacementCells = generatePlacementZone(config.getAllyPlacement(), config.getGridWidth(), blockedSet);
+        List<CoordinateDto> enemyPlacementCells = generatePlacementZone(config.getEnemyPlacement(), config.getGridWidth(), blockedSet);
 
         List<BattlePirateDto> pirates = new ArrayList<>();
-
         Collections.shuffle(allyPlacementCells);
         Collections.shuffle(enemyPlacementCells);
 
-        for (int i = 0; i < ALLY_COUNT; i++) {
-            CoordinateDto position = allyPlacementCells.get(i);
-            pirates.add(generatePirate(TeamType.ALLY, ALLY_XP, "ally_pirate_01", position.getQ(), position.getR()));
+        for (LocationConfig.SquadMember member : config.getSquad()) {
+            LocationConfig.UnitConfig unitConfig = config.getUnits().get(member.getUnitType());
+            List<CoordinateDto> placementZone = (member.getTeam() == TeamType.ALLY) ? allyPlacementCells : enemyPlacementCells;
+
+            for (int i = 0; i < member.getCount(); i++) {
+                if (!placementZone.isEmpty()) {
+                    CoordinateDto position = placementZone.removeFirst();
+                    pirates.add(createPirateFromConfig(unitConfig, member.getTeam(), position));
+                }
+            }
         }
 
-        for (int i = 0; i < ENEMY_COUNT; i++) {
-            CoordinateDto position = enemyPlacementCells.get(i);
-            pirates.add(generatePirate(TeamType.ENEMY, ENEMY_XP, "enemy_pirate_01", position.getQ(), position.getR()));
-        }
-
-        BattleLocationDto location = new BattleLocationDto(
-                "battle_location_01",
+        BattleLocationDto newLocation = new BattleLocationDto(
+                config.getLocationImageId(),
                 pirates,
-                GRID_WIDTH,
-                GRID_HEIGHT,
-                blockedCells,
+                config.getGridWidth(),
+                config.getGridHeight(),
+                config.getBlockedCells(),
                 allyPlacementCells,
                 enemyPlacementCells
         );
 
-        battleStates.put(userId, location);
-        return location;
+        redisService.set(userKey, newLocation, BATTLE_STATE_TTL);
+        return newLocation;
     }
 
     public List<BattlePirateDto> movePirateDuringPlacement(Long userId, PirateMoveRequestDto request) {
-        BattleLocationDto currentLocation = battleStates.get(userId);
+        String userKey = getKeyForUser(userId);
+        BattleLocationDto currentLocation = redisService.get(userKey, BattleLocationDto.class);
+
         if (currentLocation == null) {
-            throw new IllegalStateException("Состояние боя не найдено. Начните новый бой.");
+            throw new IllegalStateException("Состояние боя не найдено или истекло. Начните новый бой.");
         }
 
         BattlePirateDto draggedPirate = currentLocation.getPirates().stream()
@@ -98,51 +105,51 @@ public class BattleLocationService {
             if (occupyingPirate.getTeam() != TeamType.ALLY) {
                 throw new InvalidMoveException("Нельзя разместиться в ячейке, занятой противником.");
             }
-
             int oldQ = draggedPirate.getQ();
             int oldR = draggedPirate.getR();
-
             draggedPirate.setQ(request.getTargetQ());
             draggedPirate.setR(request.getTargetR());
-
             occupyingPirate.setQ(oldQ);
             occupyingPirate.setR(oldR);
         } else {
             draggedPirate.setQ(request.getTargetQ());
             draggedPirate.setR(request.getTargetR());
         }
+        redisService.set(userKey, currentLocation, BATTLE_STATE_TTL);
 
         return currentLocation.getPirates();
     }
 
-
-    private BattlePirateDto generatePirate(TeamType team, int xp, String imageId, int q, int r) {
-        return new BattlePirateDto(
-                UUID.randomUUID().toString(), team, BASE_HP, MIN_ATTACK, MAX_ATTACK,
-                ARMOR, xp, q, r, imageId, BASE_MOVEMENT);
+    /**
+     * Удаляет состояние боя из Redis после его завершения.
+     */
+    public void endBattle(Long userId) {
+        redisService.delete(getKeyForUser(userId));
     }
 
-    private List<CoordinateDto> getBlockedCells() {
-        return Arrays.asList(
-                new CoordinateDto(8, 0), new CoordinateDto(8, 1), new CoordinateDto(9, 0), new CoordinateDto(9, 1),
-                new CoordinateDto(9, 2), new CoordinateDto(9, 3), new CoordinateDto(9, 4), new CoordinateDto(9, 5),
-                new CoordinateDto(9, 6), new CoordinateDto(8, 4), new CoordinateDto(8, 5), new CoordinateDto(8, 6),
-                new CoordinateDto(0, 0), new CoordinateDto(0, 1), new CoordinateDto(0, 2), new CoordinateDto(0, 3),
-                new CoordinateDto(0, 4), new CoordinateDto(1, 0), new CoordinateDto(1, 1), new CoordinateDto(1, 2),
-                new CoordinateDto(1, 3), new CoordinateDto(1, 4)
+    private BattlePirateDto createPirateFromConfig(LocationConfig.UnitConfig config, TeamType team, CoordinateDto position) {
+        return new BattlePirateDto(
+                UUID.randomUUID().toString(),
+                team,
+                config.getHp(),
+                config.getMinAttack(),
+                config.getMaxAttack(),
+                config.getArmor(),
+                config.getXp(),
+                position.getQ(),
+                position.getR(),
+                config.getImageId(),
+                config.getMovement(),
+                config.getAttackSpeed()
         );
     }
 
-    private List<CoordinateDto> generatePlacementZone(int fromR, int toR, Set<CoordinateDto> blockedSet) {
-        List<CoordinateDto> placementCells = new ArrayList<>();
-        for (int r = fromR; r < toR; r++) {
-            for (int q = 0; q < GRID_WIDTH; q++) {
-                CoordinateDto cell = new CoordinateDto(q, r);
-                if (!blockedSet.contains(cell)) {
-                    placementCells.add(cell);
-                }
-            }
-        }
-        return placementCells;
+    private List<CoordinateDto> generatePlacementZone(LocationConfig.PlacementZone zone, int gridWidth, Set<CoordinateDto> blockedSet) {
+        return IntStream.range(zone.getFromR(), zone.getToR())
+                .boxed()
+                .flatMap(r -> IntStream.range(0, gridWidth)
+                        .mapToObj(q -> new CoordinateDto(q, r)))
+                .filter(cell -> !blockedSet.contains(cell))
+                .collect(Collectors.toList());
     }
 }

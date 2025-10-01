@@ -1,0 +1,45 @@
+{
+  "locationImageId": "battle_location_01",
+  "gridWidth": 15,
+  "gridHeight": 20,
+  "blockedCells": [
+    {"q": 8, "r": 0}, {"q": 8, "r": 1}, {"q": 9, "r": 0}, {"q": 9, "r": 1},
+    {"q": 9, "r": 2}, {"q": 9, "r": 3}, {"q": 9, "r": 4}, {"q": 9, "r": 5},
+    {"q": 9, "r": 6}, {"q": 8, "r": 4}, {"q": 8, "r": 5}, {"q": 8, "r": 6},
+    {"q": 0, "r": 0}, {"q": 0, "r": 1}, {"q": 0, "r": 2}, {"q": 0, "r": 3},
+    {"q": 0, "r": 4}, {"q": 1, "r": 0}, {"q": 1, "r": 1}, {"q": 1, "r": 2},
+    {"q": 1, "r": 3}, {"q": 1, "r": 4}
+  ],
+  "allyPlacement": {
+    "fromR": 17,
+    "toR": 20
+  },
+  "enemyPlacement": {
+    "fromR": 0,
+    "toR": 3
+  },
+  "units": {
+    "ally_pirate_default": {
+      "hp": 100,
+      "minAttack": 10,
+      "maxAttack": 20,
+      "armor": 1,
+      "movement": 3,
+      "xp": 200,
+      "imageId": "ally_pirate_01"
+    },
+    "enemy_pirate_default": {
+      "hp": 100,
+      "minAttack": 10,
+      "maxAttack": 20,
+      "armor": 1,
+      "movement": 3,
+      "xp": 120,
+      "imageId": "enemy_pirate_01"
+    }
+  },
+  "squad": [
+    {"unitType": "ally_pirate_default", "team": "ALLY", "count": 6},
+    {"unitType": "enemy_pirate_default", "team": "ENEMY", "count": 4}
+  ]
+}

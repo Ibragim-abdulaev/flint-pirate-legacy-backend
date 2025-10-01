@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.piratelegacy.auth.entity.User;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @Entity
 @Table(name = "user_quests")
-public class UserQuest {
+public class UserQuest implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

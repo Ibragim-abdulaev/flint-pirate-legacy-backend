@@ -1,14 +1,17 @@
 package org.example.piratelegacy.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.exception.ResourceNotFoundException;
 import org.example.piratelegacy.auth.repository.UserRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -31,6 +34,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Cacheable(value = "users", key = "#id")
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));

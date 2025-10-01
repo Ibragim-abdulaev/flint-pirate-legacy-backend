@@ -1,21 +1,18 @@
 package org.example.piratelegacy.auth.dto;
 
-import org.example.piratelegacy.auth.dto.BattlePirateDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.example.piratelegacy.auth.entity.enums.TeamType;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BattleLogResultDto {
-    private String winnerTeam; // "ALLY" или "ENEMY"
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class BattleLogResultDto implements Serializable {
+    private TeamType winnerTeam;
     private List<BattleLogEntryDto> log;
-    private List<BattlePirateDto> survivingPirates; // выжившие после боя
-
-    public BattleLogResultDto(String winnerTeam, List<BattleLogEntryDto> log, List<BattlePirateDto> survivingPirates) {
-        this.winnerTeam = winnerTeam;
-        this.log = log;
-        this.survivingPirates = survivingPirates;
-    }
-
-    public String getWinnerTeam() { return winnerTeam; }
-    public List<BattleLogEntryDto> getLog() { return log; }
-    public List<BattlePirateDto> getSurvivingPirates() { return survivingPirates; }
+    private List<BattlePirateDto> survivingPirates;
 }

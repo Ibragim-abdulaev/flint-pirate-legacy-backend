@@ -1,15 +1,17 @@
 package org.example.piratelegacy.auth.entity;
 
+import lombok.Getter;
 import org.example.piratelegacy.auth.dto.BattlePirateDto;
 import org.example.piratelegacy.auth.entity.enums.TeamType;
 
+@Getter
 public class BattlePirate {
-    private String id;
-    private TeamType team;
+    private final String id;
+    private final TeamType team;
     private int hp;
-    private int minAttack;
-    private int maxAttack;
-    private int armor;
+    private final int minAttack;
+    private final int maxAttack;
+    private final int armor;
 
     public BattlePirate(BattlePirateDto dto) {
         this.id = dto.getId();
@@ -19,13 +21,6 @@ public class BattlePirate {
         this.maxAttack = dto.getMaxAttack();
         this.armor = dto.getArmor();
     }
-
-    public String getId() { return id; }
-    public TeamType getTeam() { return team; }
-    public int getHp() { return hp; }
-    public int getMinAttack() { return minAttack; }
-    public int getMaxAttack() { return maxAttack; }
-    public int getArmor() { return armor; }
 
     public void applyDamage(int dmg) {
         this.hp -= dmg;
