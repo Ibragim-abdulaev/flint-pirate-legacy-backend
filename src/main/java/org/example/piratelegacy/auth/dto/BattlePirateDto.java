@@ -22,5 +22,6 @@ public class BattlePirateDto implements Serializable {
     private int r;
     private String imageId;
     private int movement;
-    private int attackSpeed = 100;
+    private int attackSpeed;
+    private int range; // Добавлено недостающее поле
 }

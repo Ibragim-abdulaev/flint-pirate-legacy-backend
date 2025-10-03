@@ -36,6 +36,7 @@ public class LocationConfig implements Serializable {
         private int armor;
         private int movement;
         private int attackSpeed;
+        private int range;
         private int xp;
         private String imageId;
     }
