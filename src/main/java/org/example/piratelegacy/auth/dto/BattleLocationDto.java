@@ -18,4 +18,5 @@ public class BattleLocationDto implements Serializable {
     private List<CoordinateDto> blockedCells;
     private List<CoordinateDto> allyPlacementCells;
     private List<CoordinateDto> enemyPlacementCells;
+    private List<CoordinateDto> allyInitialPlacementZone;
 }

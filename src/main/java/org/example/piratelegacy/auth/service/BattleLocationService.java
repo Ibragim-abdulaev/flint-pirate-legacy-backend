@@ -21,7 +21,6 @@ public class BattleLocationService {
     private final BattleConfigService battleConfigService;
 
     private static final String BATTLE_STATE_KEY_PREFIX = "battle:state:";
-
     private static final Duration BATTLE_STATE_TTL = Duration.ofHours(1);
 
     private String getKeyForUser(Long userId) {
@@ -39,7 +38,9 @@ public class BattleLocationService {
         LocationConfig config = battleConfigService.getLocationConfig(locationId);
 
         Set<CoordinateDto> blockedSet = new HashSet<>(config.getBlockedCells());
-        List<CoordinateDto> allyPlacementCells = generatePlacementZone(config.getAllyPlacement(), config.getGridWidth(), blockedSet);
+        // --- ИЗМЕНЕНИЕ: Генерируем и сохраняем полную зону ---
+        List<CoordinateDto> initialAllyPlacementZone = generatePlacementZone(config.getAllyPlacement(), config.getGridWidth(), blockedSet);
+        List<CoordinateDto> allyPlacementCells = new ArrayList<>(initialAllyPlacementZone); // Копируем для расстановки
         List<CoordinateDto> enemyPlacementCells = generatePlacementZone(config.getEnemyPlacement(), config.getGridWidth(), blockedSet);
 
         List<BattlePirateDto> pirates = new ArrayList<>();
@@ -52,7 +53,7 @@ public class BattleLocationService {
 
             for (int i = 0; i < member.getCount(); i++) {
                 if (!placementZone.isEmpty()) {
-                    CoordinateDto position = placementZone.removeFirst();
+                    CoordinateDto position = placementZone.removeFirst(); // Удаляем из временного списка
                     pirates.add(createPirateFromConfig(unitConfig, member.getTeam(), position));
                 }
             }
@@ -64,8 +65,9 @@ public class BattleLocationService {
                 config.getGridWidth(),
                 config.getGridHeight(),
                 config.getBlockedCells(),
-                allyPlacementCells,
-                enemyPlacementCells
+                allyPlacementCells,      // Здесь останутся только свободные ячейки
+                enemyPlacementCells,
+                initialAllyPlacementZone // --- ИЗМЕНЕНИЕ: Сохраняем полную зону
         );
 
         redisService.set(userKey, newLocation, BATTLE_STATE_TTL);
@@ -73,6 +75,9 @@ public class BattleLocationService {
     }
 
     public List<BattlePirateDto> movePirateDuringPlacement(Long userId, PirateMoveRequestDto request) {
+        log.info("=== MOVE PIRATE DEBUG ===");
+        log.info("Target coordinates: q={}, r={}", request.getTargetQ(), request.getTargetR());
+
         String userKey = getKeyForUser(userId);
         BattleLocationDto currentLocation = redisService.get(userKey, BattleLocationDto.class);
 
@@ -80,24 +85,44 @@ public class BattleLocationService {
             throw new IllegalStateException("Состояние боя не найдено или истекло. Начните новый бой.");
         }
 
+        log.info("Ally placement zone size: {}", currentLocation.getAllyInitialPlacementZone().size());
+        log.info("Ally placement zone: {}", currentLocation.getAllyInitialPlacementZone());
+        log.info("Blocked cells size: {}", currentLocation.getBlockedCells().size());
+
         BattlePirateDto draggedPirate = currentLocation.getPirates().stream()
                 .filter(p -> p.getId().equals(request.getPirateId()))
                 .findFirst()
                 .orElseThrow(() -> new InvalidMoveException("Перемещаемый пират с ID " + request.getPirateId() + " не найден."));
 
+        log.info("Dragged pirate current position: q={}, r={}", draggedPirate.getQ(), draggedPirate.getR());
+
         if (draggedPirate.getTeam() != TeamType.ALLY) {
             throw new InvalidMoveException("Нельзя перемещать пиратов противника.");
         }
 
-        boolean isTargetCellValid = currentLocation.getAllyPlacementCells().stream()
+        boolean isInPlacementZone = currentLocation.getAllyInitialPlacementZone().stream()
                 .anyMatch(cell -> cell.getQ() == request.getTargetQ() && cell.getR() == request.getTargetR());
 
-        if (!isTargetCellValid) {
+        log.info("Is in placement zone: {}", isInPlacementZone);
+
+        if (!isInPlacementZone) {
             throw new InvalidMoveException("Недопустимая позиция для расстановки.");
         }
 
+        boolean isBlocked = currentLocation.getBlockedCells().stream()
+                .anyMatch(cell -> cell.getQ() == request.getTargetQ() && cell.getR() == request.getTargetR());
+
+        log.info("Is blocked: {}", isBlocked);
+
+        if (isBlocked) {
+            throw new InvalidMoveException("Нельзя разместиться в заблокированной ячейке.");
+        }
+
+        // Проверяем, занята ли целевая ячейка другим пиратом
         Optional<BattlePirateDto> occupyingPirateOpt = currentLocation.getPirates().stream()
-                .filter(p -> p.getQ() == request.getTargetQ() && p.getR() == request.getTargetR() && !p.getId().equals(draggedPirate.getId()))
+                .filter(p -> p.getQ() == request.getTargetQ()
+                        && p.getR() == request.getTargetR()
+                        && !p.getId().equals(draggedPirate.getId()))
                 .findFirst();
 
         if (occupyingPirateOpt.isPresent()) {
@@ -105,6 +130,7 @@ public class BattleLocationService {
             if (occupyingPirate.getTeam() != TeamType.ALLY) {
                 throw new InvalidMoveException("Нельзя разместиться в ячейке, занятой противником.");
             }
+            // Меняем местами
             int oldQ = draggedPirate.getQ();
             int oldR = draggedPirate.getR();
             draggedPirate.setQ(request.getTargetQ());
@@ -112,11 +138,12 @@ public class BattleLocationService {
             occupyingPirate.setQ(oldQ);
             occupyingPirate.setR(oldR);
         } else {
+            // Перемещаем в пустую ячейку
             draggedPirate.setQ(request.getTargetQ());
             draggedPirate.setR(request.getTargetR());
         }
-        redisService.set(userKey, currentLocation, BATTLE_STATE_TTL);
 
+        redisService.set(userKey, currentLocation, BATTLE_STATE_TTL);
         return currentLocation.getPirates();
     }
 
@@ -140,16 +167,22 @@ public class BattleLocationService {
                 position.getR(),
                 config.getImageId(),
                 config.getMovement(),
-                config.getAttackSpeed()
+                config.getAttackSpeed(),
+                config.getRange()
         );
     }
 
     private List<CoordinateDto> generatePlacementZone(LocationConfig.PlacementZone zone, int gridWidth, Set<CoordinateDto> blockedSet) {
-        return IntStream.range(zone.getFromR(), zone.getToR())
+        List<CoordinateDto> result = IntStream.range(zone.getFromR(), zone.getToR())
                 .boxed()
                 .flatMap(r -> IntStream.range(0, gridWidth)
                         .mapToObj(q -> new CoordinateDto(q, r)))
                 .filter(cell -> !blockedSet.contains(cell))
                 .collect(Collectors.toList());
+
+        log.info("Generated placement zone: fromR={}, toR={}, size={}",
+                zone.getFromR(), zone.getToR(), result.size());
+
+        return result;
     }
 }

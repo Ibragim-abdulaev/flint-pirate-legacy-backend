@@ -45,7 +45,7 @@ public class BattleController {
         return ResponseEntity.ok(new ApiResponse<>(true, location));
     }
 
-    @PostMapping("/placement/move")
+    @PostMapping("/placement/quest/{questKey}/move")
     public ResponseEntity<ApiResponse<List<BattlePirateDto>>> movePirate(
             @CurrentUser User user,
             @RequestBody PirateMoveRequestDto moveRequest) {
