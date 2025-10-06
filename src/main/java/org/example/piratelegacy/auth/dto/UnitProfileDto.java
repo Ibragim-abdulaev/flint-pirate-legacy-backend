@@ -25,6 +25,8 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
+    @AllArgsConstructor // <-- Добавлен для Builder
+    @NoArgsConstructor
     public static class Stat implements Serializable {
         private int hp;
         private int minAttack;
@@ -34,6 +36,8 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
+    @AllArgsConstructor // <-- Добавлен для Builder
+    @NoArgsConstructor
     public static class EquipmentDto implements Serializable {
         private ItemDto weapon;
         private ItemDto armor;
@@ -41,6 +45,8 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
+    @AllArgsConstructor // <-- Добавлен для Builder
+    @NoArgsConstructor
     public static class ItemDto implements Serializable {
         private String itemKey;
         private String name;
