@@ -4,8 +4,10 @@ import lombok.Getter;
 import org.example.piratelegacy.auth.dto.BattlePirateDto;
 import org.example.piratelegacy.auth.entity.enums.TeamType;
 
+import java.io.Serializable;
+
 @Getter
-public class BattlePirate {
+public class BattlePirate implements Serializable {
     private final String id;
     private final TeamType team;
     private int hp;

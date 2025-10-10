@@ -36,7 +36,7 @@ public class UnitService {
                         .name(unit.getName())
                         .level(unit.getLevel())
                         // TODO: У юнита должно быть поле для URL портрета
-                        .portraitImageUrl("/images/portraits/" + unit.getUnitTypeKey() + ".png")
+                        .portraitImageUrl("/images/" + unit.getUnitTypeKey() + ".png")
                         .build())
                 .collect(Collectors.toList());
     }
