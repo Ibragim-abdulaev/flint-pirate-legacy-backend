@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.piratelegacy.auth.dto.CharacterOptionDto;
 import org.example.piratelegacy.auth.dto.CharacterStatsDto;
 import org.example.piratelegacy.auth.entity.enums.CharacterType;
 import org.example.piratelegacy.auth.entity.enums.CombatClass;
@@ -25,31 +26,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class GameConfigService {
 
     private final ObjectMapper objectMapper;
     private final ResourceLoader resourceLoader;
 
     @Value("${game.config.characters-path}")
-    private final String charactersPath;
+    private String charactersPath;
 
     @Value("${game.config.starters-path}")
-    private final String startersPath;
+    private String startersPath;
 
     private Map<CharacterType, CharacterStats> characterStatsMap;
     private Set<CharacterType> starterCharacterTypes;
 
-    public GameConfigService(
-            ObjectMapper objectMapper,
-            ResourceLoader resourceLoader,
-            @Value("${game.config.characters-path}") String charactersPath,
-            @Value("${game.config.starters-path}") String startersPath
-    ) {
-        this.objectMapper = objectMapper;
-        this.resourceLoader = resourceLoader;
-        this.charactersPath = charactersPath;
-        this.startersPath = startersPath;
-    }
 
     @PostConstruct
     public void init() {
@@ -95,6 +86,30 @@ public class GameConfigService {
                 .map(this::getCharacterStats)
                 .collect(Collectors.toList());
     }
+
+    public List<CharacterOptionDto> getCharacterOptions() {
+        return getStarterCharacters().stream()
+                .map(stats -> new CharacterOptionDto(
+                        stats.getCharacterType().name(),
+                        stats.getDisplayName(),
+                        new CharacterStatsDto(
+                                stats.getCharacterType(),
+                                stats.getDisplayName(),
+                                stats.getCombatClass(),
+                                stats.getBaseHp(),
+                                stats.getMinAttack(),
+                                stats.getMaxAttack(),
+                                stats.getBaseArmor(),
+                                stats.getSpecialAbility()
+                        )
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isValidCharacterType(CharacterType characterType) {
+        return starterCharacterTypes.contains(characterType);
+    }
+
 
     @Data
     public static class CharacterStats implements Serializable {

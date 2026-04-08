@@ -11,7 +11,6 @@ CREATE TABLE items (
 );
 COMMENT ON TABLE items IS 'Справочник всех предметов в игре';
 
--- Таблица инвентаря пользователей
 CREATE TABLE user_inventory (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -22,7 +21,6 @@ CREATE TABLE user_inventory (
 );
 COMMENT ON TABLE user_inventory IS 'Предметы в инвентаре пользователей';
 
--- Таблица для всех юнитов, принадлежащих игрокам (включая главного героя)
 CREATE TABLE user_units (
     id BIGSERIAL PRIMARY KEY,
     owner_id BIGINT NOT NULL,

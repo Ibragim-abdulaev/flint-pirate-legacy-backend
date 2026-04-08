@@ -58,6 +58,9 @@ public class Quest implements Serializable {
     @Column(name = "stone_reward")
     private Long stoneReward;
 
+    @Column(name = "crystals_reward")
+    private Long crystalsReward;
+
     @Column(name = "button_text")
     private String buttonText;
 

@@ -75,6 +75,7 @@ public class QuestInitializationService implements CommandLineRunner {
                         .title(chainDto.getTitle())
                         .description(chainDto.getDescription())
                         .iconUrl(chainDto.getIconUrl())
+                        .journalImageUrl(chainDto.getJournalImageUrl())
                         .chainType(chainDto.getType())
                         .quests(new ArrayList<>())
                         .build();
@@ -92,6 +93,7 @@ public class QuestInitializationService implements CommandLineRunner {
                             .expReward(stepDto.getRewards().getExperience())
                             .woodReward(stepDto.getRewards().getWood())
                             .stoneReward(stepDto.getRewards().getStone())
+                            .crystalsReward(stepDto.getRewards().getCrystals())
                             .buttonText(stepDto.getButtonText())
                             .battleLocationId(stepDto.getBattleLocationId())
                             .questChain(questChain)
@@ -128,21 +130,19 @@ public class QuestInitializationService implements CommandLineRunner {
         }
     }
 
-    // --- ВОТ ЭТОТ МЕТОД НУЖНО БЫЛО ДОБАВИТЬ ---
     @Transactional
     public void reloadQuestsFromJson() {
         log.info("Manual quest reload requested via admin endpoint.");
         questChainRepository.deleteAllInBatch();
         initializeQuestsFromJson();
     }
-    // ------------------------------------------
 
-    // Вспомогательные DTO для парсинга JSON
     @Data private static class QuestChainJsonDto {
         private String chainKey;
         private String title;
         private String description;
         private String iconUrl;
+        private String journalImageUrl;
         private QuestChainType type;
         private List<QuestStepJsonDto> steps;
     }
@@ -165,6 +165,7 @@ public class QuestInitializationService implements CommandLineRunner {
         private long experience;
         private long wood;
         private long stone;
+        private long crystals;
         private List<ItemRewardJsonDto> items;
     }
 

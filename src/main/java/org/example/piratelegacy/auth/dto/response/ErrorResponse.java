@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse implements Serializable {
     private int statusCode;

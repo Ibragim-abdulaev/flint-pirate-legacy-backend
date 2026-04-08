@@ -52,7 +52,7 @@ public class RedisService {
      * @return true, если ключ существует, иначе false.
      */
     public boolean hasKey(String key) {
-        // Boolean.TRUE.equals() - это безопасный способ работы с результатом, который может быть null
+
         return redisTemplate.hasKey(key);
     }
 

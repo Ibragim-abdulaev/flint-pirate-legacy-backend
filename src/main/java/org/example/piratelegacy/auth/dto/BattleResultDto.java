@@ -57,6 +57,7 @@ public class BattleResultDto implements Serializable {
         private long gold;
         private long wood;
         private long stone;
+        private long crystals;
         private List<ItemRewardDto> items;
     }
 }

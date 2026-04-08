@@ -91,6 +91,7 @@ public class JournalService {
                 .chainKey(chain.getChainKey())
                 .title(chain.getTitle())
                 .iconUrl(chain.getIconUrl())
+                .journalImageUrl(chain.getJournalImageUrl())
                 .completedSteps(completedSteps)
                 .totalSteps(totalSteps)
                 .isAvailable(isAvailable)
@@ -121,7 +122,8 @@ public class JournalService {
                 .collect(Collectors.toList());
         return new QuestDto(
                 quest.getQuestKey(), quest.getTitle(), quest.getNpcName(), quest.getNpcImageUrl(),
-                quest.getStoryText(), quest.getObjective(), quest.getGoldReward(),
-                quest.getExpReward(), itemRewards, quest.getButtonText(), quest.getBattleLocationId());
+                quest.getStoryText(), quest.getObjective(), quest.getGoldReward(), quest.getWoodReward(),
+                quest.getStoneReward(), quest.getCrystalsReward(), quest.getExpReward(), itemRewards,
+                quest.getButtonText(), quest.getBattleLocationId());
     }
 }

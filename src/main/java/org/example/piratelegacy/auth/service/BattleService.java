@@ -72,7 +72,7 @@ public class BattleService {
             List<BattleUnit> unitsToAct = allLivingUnits.stream()
                     .filter(u -> !u.isDead() && u.getNextActionTime() <= finalCurrentTime)
                     .sorted(Comparator.comparing(BattleUnit::getId))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (unitsToAct.isEmpty()) {
                 emptyIterations++;
@@ -169,7 +169,6 @@ public class BattleService {
 
         BattleUnit targetToActOn = actor.getCurrentTarget();
 
-        // ПРИОРИТЕТ 1: Враг вплотную
         Optional<BattleUnit> adjacentThreatOpt = targets.stream()
                 .filter(t -> !t.isDead() && calculateAttackDistance(actor, t) <= 1)
                 .min(Comparator.comparingInt(BattleUnit::getCurrentHp));
@@ -184,11 +183,9 @@ public class BattleService {
             }
         }
 
-        // ПРИОРИТЕТ 2: Бьем текущую цель, если в зоне
         if (targetToActOn != null && !targetToActOn.isDead()) {
             int distanceToCurrentTarget = calculateAttackDistance(actor, targetToActOn);
 
-            // КЛЮЧЕВОЕ: если деремся вплотную - НЕ БРОСАЕМ цель!
             if (distanceToCurrentTarget == 1) {
                 actor.clearPath();
                 return new PlannedAction(targetToActOn, null, true);
@@ -200,7 +197,6 @@ public class BattleService {
             }
         }
 
-        // ПРИОРИТЕТ 3: Ищем новую цель если застряли
         if (actor.getPathBlockedAttempts() >= MAX_PATH_BLOCKED_ATTEMPTS) {
             BattleUnit ignoredTarget = targetToActOn;
             targetToActOn = findOptimalTarget(actor, targets, ignoredTarget);
@@ -219,7 +215,6 @@ public class BattleService {
             return null;
         }
 
-        // ПРИОРИТЕТ 4: Двигаемся к цели
         if (calculateAttackDistance(actor, targetToActOn) <= actor.getRange()) {
             actor.clearPath();
             return new PlannedAction(targetToActOn, null, true);
@@ -241,7 +236,6 @@ public class BattleService {
         HexCoord currentPos = new HexCoord(actor.getQ(), actor.getR());
         PlannedAction finalPlan = generatePlanForTarget(actor, targetToActOn, currentPos, hardObstacles, softObstacles, context, allies, targets, claimedHexes);
 
-        // Если не получилось - строим БЕЗ учета союзников
         if (finalPlan == null) {
             finalPlan = generatePlanForTarget(actor, targetToActOn, currentPos, hardObstacles, Collections.emptySet(), context, allies, targets, claimedHexes);
         }
@@ -286,7 +280,6 @@ public class BattleService {
         Collections.shuffle(attackPositions);
 
         for (HexCoord pos : attackPositions) {
-            // Пропускаем, если эта позиция уже зарезервирована другим юнитом
             if (claimedHexes.contains(pos.toKey())) {
                 continue;
             }
@@ -294,7 +287,6 @@ public class BattleService {
             List<HexCoord> path = findPathAStarWithSoftObstacles(currentPos, pos, hardObstacles, softObstacles, context);
             if (path != null && !path.isEmpty()) {
                 int crowdPenalty = countAlliesNear(pos, actorsTeam, 2);
-                // Небольшой штраф за скопление, но не критичный
                 double score = path.size() + (crowdPenalty * 0.5);
                 if (score < bestScore) {
                     bestScore = score;
@@ -522,7 +514,6 @@ public class BattleService {
         target.takeDamage(actualDamage);
         boolean isKill = target.isDead();
 
-        // ВАЖНО: Фиксируем цель при атаке
         attacker.setCurrentTarget(target);
         attacker.setLastTargetSwitchTime(currentTime);
 
@@ -537,7 +528,6 @@ public class BattleService {
         log.add(new BattleLogEntryDto(BattleLogEntryDto.LogEntryType.ATTACK, attacker.getId(), attackData));
 
         if (isKill) {
-            // Сбрасываем цель только при убийстве
             attacker.setCurrentTarget(null);
 
             Map<String, Object> deathData = new HashMap<>();
@@ -573,7 +563,7 @@ public class BattleService {
         List<HexCoord> path = new ArrayList<>();
         AStarNode current = endNode;
         while (current != null) {
-            path.add(0, current.coord);
+            path.addFirst(current.coord);
             current = current.parent;
         }
         return path;
@@ -609,13 +599,14 @@ public class BattleService {
                     .gold(quest.getGoldReward() != null ? quest.getGoldReward() : 0L)
                     .wood(quest.getWoodReward() != null ? quest.getWoodReward() : 0L)
                     .stone(quest.getStoneReward() != null ? quest.getStoneReward() : 0L)
+                    .crystals(quest.getCrystalsReward() != null ? quest.getCrystalsReward() : 0L)
                     .items(quest.getItemRewards() == null ? Collections.emptyList() :
                             quest.getItemRewards().stream()
                                     .map(r -> new ItemRewardDto(r.getItem().getItemKey(), r.getItem().getName(), r.getItem().getImageUrl(), r.getQuantity()))
                                     .collect(Collectors.toList()))
                     .build();
         } else {
-            rewards = BattleResultDto.RewardsDto.builder().experience(0L).gold(0L).wood(0L).stone(0L).items(Collections.emptyList()).build();
+            rewards = BattleResultDto.RewardsDto.builder().experience(0L).gold(0L).wood(0L).stone(0L).crystals(0L).items(Collections.emptyList()).build();
         }
         return BattleResultDto.builder().winnerTeam(winnerTeam).rewards(rewards).log(battleLog).yourLossesIds(allyLossesIds).enemyLossesIds(enemyLossesIds).build();
     }
@@ -649,8 +640,7 @@ public class BattleService {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof HexCoord)) return false;
-            HexCoord hexCoord = (HexCoord) o;
+            if (!(o instanceof HexCoord hexCoord)) return false;
             return q == hexCoord.q && r == hexCoord.r;
         }
 

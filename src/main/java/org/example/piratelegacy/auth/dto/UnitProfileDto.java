@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UnitProfileDto implements Serializable {
@@ -25,7 +25,7 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
-    @AllArgsConstructor // <-- Добавлен для Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Stat implements Serializable {
         private int hp;
@@ -36,7 +36,7 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
-    @AllArgsConstructor // <-- Добавлен для Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class EquipmentDto implements Serializable {
         private ItemDto weapon;
@@ -45,7 +45,7 @@ public class UnitProfileDto implements Serializable {
 
     @Data
     @Builder
-    @AllArgsConstructor // <-- Добавлен для Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class ItemDto implements Serializable {
         private String itemKey;

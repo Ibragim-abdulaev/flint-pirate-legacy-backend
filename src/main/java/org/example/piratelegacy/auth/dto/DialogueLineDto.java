@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DialogueLineDto implements Serializable {
-    private String characterName; // Имя персонажа (Боцман, Шкипер)
-    private String characterImageUrl; // URL его аватара
-    private String line;          // Текст реплики
+    private String characterName;
+    private String characterImageUrl;
+    private String line;
 }

@@ -3,6 +3,7 @@ CREATE TABLE user_resources (
     gold BIGINT NOT NULL DEFAULT 0,
     wood BIGINT NOT NULL DEFAULT 0,
     stone BIGINT NOT NULL DEFAULT 0,
+    crystals BIGINT NOT NULL DEFAULT 0,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     CONSTRAINT fk_resources_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

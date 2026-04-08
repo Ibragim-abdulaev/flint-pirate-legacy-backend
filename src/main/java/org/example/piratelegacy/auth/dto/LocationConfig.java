@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 public class LocationConfig implements Serializable {
     private String locationImageId;

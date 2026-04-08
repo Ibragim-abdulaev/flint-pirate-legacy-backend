@@ -33,7 +33,7 @@ public class User implements Serializable {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Unit> units; // изменили с pirates на heroes
+    private List<Unit> units;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserResources resources;

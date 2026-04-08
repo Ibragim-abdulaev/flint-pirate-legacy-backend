@@ -2,7 +2,7 @@ package org.example.piratelegacy.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor; // Добавим NoArgsConstructor для удобства
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.List;

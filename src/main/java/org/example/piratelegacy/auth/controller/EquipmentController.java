@@ -36,7 +36,6 @@ public class EquipmentController {
         return ResponseEntity.ok(new ApiResponse<>(true, new MessageResponse("Предмет снят.")));
     }
 
-    // Вспомогательные классы для запросов
     @Data
     private static class EquipRequest {
         private Long unitId;
@@ -46,6 +45,6 @@ public class EquipmentController {
     @Data
     private static class UnequipRequest {
         private Long unitId;
-        private ItemType itemType; // WEAPON или ARMOR
+        private ItemType itemType;
     }
 }

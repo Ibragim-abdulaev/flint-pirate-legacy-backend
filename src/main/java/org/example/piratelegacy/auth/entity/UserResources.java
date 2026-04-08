@@ -33,6 +33,9 @@ public class UserResources implements Serializable {
     @Column(nullable = false)
     private Long stone = 0L;
 
+    @Column(nullable = false)
+    private Long crystals = 0L;
+
     @Column(name = "updated_at", nullable = false, insertable = false, updatable = false,
             columnDefinition = "TIMESTAMP DEFAULT now()")
     private LocalDateTime updatedAt;

@@ -2,6 +2,7 @@ package org.example.piratelegacy.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.piratelegacy.auth.dto.CharacterOptionDto;
 import org.example.piratelegacy.auth.dto.request.CharacterSelectionRequest;
 import org.example.piratelegacy.auth.entity.Unit;
 import org.example.piratelegacy.auth.entity.User;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,8 @@ public class CharacterSelectionService {
 
     private final UnitRepository unitRepository;
     private final GameConfigService gameConfigService;
+    private final UserResourcesService userResourcesService;
+
 
     @Transactional
     public Unit selectCharacter(User user, CharacterSelectionRequest request) {
@@ -41,7 +46,7 @@ public class CharacterSelectionService {
 
         Unit mainHeroUnit = Unit.builder()
                 .owner(user)
-                .unitTypeKey(stats.getCharacterType().name()) // Например, "BARBARIAN"
+                .unitTypeKey(stats.getCharacterType().name())
                 .name(request.getName().trim())
                 .level(1)
                 .experience(0L)
@@ -49,10 +54,17 @@ public class CharacterSelectionService {
                 .baseMinAttack(stats.getMinAttack())
                 .baseMaxAttack(stats.getMaxAttack())
                 .baseArmor(stats.getBaseArmor())
-                .isMainHero(true) // Указываем, что это главный герой
+                .isMainHero(true)
                 .build();
 
-        return unitRepository.save(mainHeroUnit);
+        Unit savedUnit = unitRepository.save(mainHeroUnit);
+        log.info("Created main hero {} for user {}", savedUnit.getId(), user.getId());
+
+        return savedUnit;
+    }
+
+    public List<CharacterOptionDto> getCharacterOptions() {
+        return gameConfigService.getCharacterOptions();
     }
 
     @Transactional(readOnly = true)
