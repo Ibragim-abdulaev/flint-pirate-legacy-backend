@@ -1,13 +1,59 @@
 [
   {
-    "chainKey": "main_storyline",
-    "title": "Сюжетная линия",
+    "chainKey": "treasure_map_part_1",
+    "title": "Первая часть карты сокровищ",
+    "description": "Основной сюжет игры, ведущий вас по миру приключений.",
+    "iconUrl": "/images/quest/quest_treasure_map_part_1.png",
+    "journalImageUrl": "/images/quest/journal_treasure_map_part_1.png",
+    "type": "STORYLINE",
+    "steps": [
+      {
+        "questKey": "rescue_bartender_joe",
+        "questOrder": 1,
+        "title": "Отбить трактирщика Джо",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Эти свиньи смеют называть себя Пиратами? Джек Клешня - гнилой пес, его люди похитили Джо! Верни его, а их скорми рыбам!",
+        "objective": "Отбей трактирщика Джо",
+        "rewards": {
+          "gold": 0,
+          "experience": 400,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь",
+        "battleLocationId": "first_quest_location"
+      },
+      {
+        "questKey": "first_team",
+        "questOrder": 2,
+        "title": "Первая команда",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Как! Ты все еще без команды?! Иди в трактир к Джо: уверен, ты найдешь среди его посетителей нужных тебе людей.",
+        "objective": "Найми пирата в трактире",
+        "rewards": {
+          "gold": 0,
+          "experience": 400,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь",
+        "battleLocationId": "first_quest_location"
+      }
+    ]
+  },
+  {
+    "chainKey": "hellforge_artifacts",
+    "title": "Артефакты адской кузницы",
     "description": "Основной сюжет игры, ведущий вас по миру приключений.",
     "iconUrl": "/images/icons/story_map.png",
     "type": "STORYLINE",
     "steps": [
       {
-        "questKey": "rescue_bartender_joe",
+        "questKey": "hellforge_artifacts1",
         "questOrder": 1,
         "title": "Отбить трактирщика Джо",
         "npcName": "Старый Флинт",

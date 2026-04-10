@@ -43,11 +43,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody RegisterRequest request) {
         User user = userService.register(request.getUsername(), request.getEmail(), request.getPassword());
-        userResourcesService.createInitialResources(user);
+        userResourcesService.createInitialResources(user.getId());
         popupService.initializePopupsForUser(user);
 
         String token = jwtService.generateToken(user);
-        AuthResponse response = new AuthResponse(token, false, true); // hasCharacter=false, isNewUser=true
+        AuthResponse response = new AuthResponse(token, false, true);
         return ResponseEntity.ok(new ApiResponse<>(true, response));
     }
 
@@ -64,7 +64,7 @@ public class AuthController {
 
         String token = jwtService.generateToken(userDetails);
         boolean hasCharacter = characterSelectionService.userHasCharacter(user);
-        AuthResponse response = new AuthResponse(token, hasCharacter, false); // isNewUser=false
+        AuthResponse response = new AuthResponse(token, hasCharacter, false);
         return ResponseEntity.ok(new ApiResponse<>(true, response));
     }
 

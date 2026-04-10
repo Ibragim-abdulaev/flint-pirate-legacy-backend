@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class UnitSummaryDto implements Serializable {

@@ -1,15 +1,14 @@
--- Таблица для квестовых цепочек ("Сюжетная линия", "Приключения")
 CREATE TABLE quest_chains (
     id BIGSERIAL PRIMARY KEY,
     chain_key VARCHAR(100) NOT NULL UNIQUE,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(1000),
     icon_url VARCHAR(500),
+    journal_icon_url VARCHAR(500),
     chain_type VARCHAR(50) NOT NULL -- 'STORYLINE' или 'ADVENTURE'
 );
 COMMENT ON TABLE quest_chains IS 'Квестовые цепочки (сюжетные линии, приключения)';
 
--- Таблица для конкретных шагов-квестов
 CREATE TABLE quests (
     id BIGSERIAL PRIMARY KEY,
     quest_chain_id BIGINT NOT NULL,
@@ -24,6 +23,7 @@ CREATE TABLE quests (
     exp_reward BIGINT DEFAULT 0,
     wood_reward BIGINT DEFAULT 0,
     stone_reward BIGINT DEFAULT 0,
+    crystals_reward BIGINT DEFAULT 0,
     button_text VARCHAR(100) DEFAULT 'В путь',
     battle_location_id VARCHAR(255),
     CONSTRAINT fk_quests_quest_chain FOREIGN KEY (quest_chain_id) REFERENCES quest_chains(id) ON DELETE CASCADE,
@@ -31,7 +31,6 @@ CREATE TABLE quests (
 );
 COMMENT ON TABLE quests IS 'Конкретные шаги (квесты) внутри квестовых цепочек';
 
--- Связующая таблица для наград-предметов
 CREATE TABLE quest_item_rewards (
     id BIGSERIAL PRIMARY KEY,
     quest_id BIGINT NOT NULL,
@@ -42,7 +41,6 @@ CREATE TABLE quest_item_rewards (
 );
 COMMENT ON TABLE quest_item_rewards IS 'Связь квестов и их наград в виде предметов';
 
--- Таблица прогресса игрока по квестам
 CREATE TABLE user_quests (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,

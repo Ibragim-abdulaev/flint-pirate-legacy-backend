@@ -9,10 +9,8 @@ import java.util.Optional;
 
 public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
 
-    // Этот метод нужен для нового UserProgressService
-    boolean existsByUserIdAndQuestId(Long userId, Long questId);
+        boolean existsByUserIdAndQuestId(Long userId, Long questId);
 
-    // Этот метод нужен для JournalService
     @EntityGraph(attributePaths = {"quest.questChain"})
     List<UserQuest> findByUserIdAndIsCompletedTrue(Long userId);
 

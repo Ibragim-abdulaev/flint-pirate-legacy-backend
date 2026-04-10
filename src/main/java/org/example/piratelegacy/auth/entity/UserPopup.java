@@ -24,7 +24,7 @@ public class UserPopup implements Serializable {
     private User user;
 
     @Column(name = "popup_type", nullable = false)
-    private String popupType; // "WELCOME", "FIRST_QUEST", и т.д.
+    private String popupType;
 
     @Column(name = "is_shown", nullable = false)
     private boolean isShown = false;

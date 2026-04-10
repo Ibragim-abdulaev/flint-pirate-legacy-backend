@@ -11,9 +11,9 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BattleLogEntryDto implements Serializable {
-    private LogEntryType type; // Тип события: MOVE, ATTACK, DEATH
-    private String unitId;     // ID юнита, который совершил действие
-    private Map<String, Object> details; // Детали события
+    private LogEntryType type;
+    private String unitId;
+    private Map<String, Object> details;
 
     public enum LogEntryType {
         TURN_START,

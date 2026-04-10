@@ -32,7 +32,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // Пропускаем preflight OPTIONS
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             filterChain.doFilter(request, response);
             return;
@@ -54,7 +53,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Логируем начало токена (первые 10 символов)
         log.debug("🔹 [{}] Получен токен: {}...", request.getRequestURI(), jwt.substring(0, Math.min(10, jwt.length())));
 
         if (jwtBlacklistService.isBlacklisted(jwt)) {

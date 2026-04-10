@@ -12,22 +12,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestDto implements Serializable {
-    // Основная информация о квесте
     private String questKey;
     private String title;
-    private String npcName;         // Имя главного NPC квеста для аватара
-    private String npcImageUrl;     // URL его аватара
-
-    // Разделенные текст и цель
-    private String storyText;       // Сюжетное описание, диалоги
-    private String objective;       // Краткая цель задания (жирным шрифтом)
-
-    // Награды
+    private String npcName;
+    private String npcImageUrl;
+    private String storyText;
+    private String objective;
     private Long goldReward;
+    private Long wood;
+    private Long stone;
+    private Long crystals;
     private Long expReward;
-    private List<ItemRewardDto> itemRewards; // Список наград-предметов
-
-    // Техническая информация
+    private List<ItemRewardDto> itemRewards;
     private String buttonText;
     private String battleLocationId;
 }

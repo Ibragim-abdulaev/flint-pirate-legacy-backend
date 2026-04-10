@@ -32,8 +32,16 @@ public class User implements Serializable {
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "player_level", nullable = false)
+    @Builder.Default
+    private int playerLevel = 1;
+
+    @Column(name = "player_exp", nullable = false)
+    @Builder.Default
+    private long playerExp = 0L;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Unit> units; // изменили с pirates на heroes
+    private List<Unit> units;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserResources resources;

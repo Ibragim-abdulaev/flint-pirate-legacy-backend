@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface QuestChainRepository extends JpaRepository<QuestChain, Long> {
-    // Жадная загрузка квестов для избежания N+1 запросов в JournalService
+
     @Override
     @EntityGraph(attributePaths = {"quests"})
     List<QuestChain> findAll();

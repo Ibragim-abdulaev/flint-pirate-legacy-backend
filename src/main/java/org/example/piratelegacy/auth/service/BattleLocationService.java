@@ -38,9 +38,8 @@ public class BattleLocationService {
         LocationConfig config = battleConfigService.getLocationConfig(locationId);
 
         Set<CoordinateDto> blockedSet = new HashSet<>(config.getBlockedCells());
-        // --- ИЗМЕНЕНИЕ: Генерируем и сохраняем полную зону ---
         List<CoordinateDto> initialAllyPlacementZone = generatePlacementZone(config.getAllyPlacement(), config.getGridWidth(), blockedSet);
-        List<CoordinateDto> allyPlacementCells = new ArrayList<>(initialAllyPlacementZone); // Копируем для расстановки
+        List<CoordinateDto> allyPlacementCells = new ArrayList<>(initialAllyPlacementZone);
         List<CoordinateDto> enemyPlacementCells = generatePlacementZone(config.getEnemyPlacement(), config.getGridWidth(), blockedSet);
 
         List<BattlePirateDto> pirates = new ArrayList<>();
@@ -53,7 +52,7 @@ public class BattleLocationService {
 
             for (int i = 0; i < member.getCount(); i++) {
                 if (!placementZone.isEmpty()) {
-                    CoordinateDto position = placementZone.removeFirst(); // Удаляем из временного списка
+                    CoordinateDto position = placementZone.removeFirst();
                     pirates.add(createPirateFromConfig(unitConfig, member.getTeam(), position));
                 }
             }
@@ -65,9 +64,9 @@ public class BattleLocationService {
                 config.getGridWidth(),
                 config.getGridHeight(),
                 config.getBlockedCells(),
-                allyPlacementCells,      // Здесь останутся только свободные ячейки
+                allyPlacementCells,
                 enemyPlacementCells,
-                initialAllyPlacementZone // --- ИЗМЕНЕНИЕ: Сохраняем полную зону
+                initialAllyPlacementZone
         );
 
         redisService.set(userKey, newLocation, BATTLE_STATE_TTL);
@@ -118,7 +117,6 @@ public class BattleLocationService {
             throw new InvalidMoveException("Нельзя разместиться в заблокированной ячейке.");
         }
 
-        // Проверяем, занята ли целевая ячейка другим пиратом
         Optional<BattlePirateDto> occupyingPirateOpt = currentLocation.getPirates().stream()
                 .filter(p -> p.getQ() == request.getTargetQ()
                         && p.getR() == request.getTargetR()
@@ -130,7 +128,6 @@ public class BattleLocationService {
             if (occupyingPirate.getTeam() != TeamType.ALLY) {
                 throw new InvalidMoveException("Нельзя разместиться в ячейке, занятой противником.");
             }
-            // Меняем местами
             int oldQ = draggedPirate.getQ();
             int oldR = draggedPirate.getR();
             draggedPirate.setQ(request.getTargetQ());
@@ -138,7 +135,6 @@ public class BattleLocationService {
             occupyingPirate.setQ(oldQ);
             occupyingPirate.setR(oldR);
         } else {
-            // Перемещаем в пустую ячейку
             draggedPirate.setQ(request.getTargetQ());
             draggedPirate.setR(request.getTargetR());
         }

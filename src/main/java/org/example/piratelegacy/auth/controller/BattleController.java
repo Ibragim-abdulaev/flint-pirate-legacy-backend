@@ -9,6 +9,7 @@ import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.exception.ApiException;
 import org.example.piratelegacy.auth.security.annotation.CurrentUser;
 import org.example.piratelegacy.auth.service.BattleLocationService;
+import org.example.piratelegacy.auth.service.BattleRewardService;
 import org.example.piratelegacy.auth.service.BattleService;
 import org.example.piratelegacy.auth.service.QuestService;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -26,6 +29,7 @@ public class BattleController {
     private final BattleLocationService battleLocationService;
     private final BattleService battleService;
     private final QuestService questService;
+    private final BattleRewardService battleRewardService;
 
     @GetMapping("/location/quest/{questKey}")
     public ResponseEntity<ApiResponse<BattleLocationDto>> getQuestBattleLocation(
@@ -53,12 +57,6 @@ public class BattleController {
         return ResponseEntity.ok(new ApiResponse<>(true, updatedPirates));
     }
 
-    /**
-     * Запускает симуляцию автоматического боя.
-     * @param questKey Ключ квеста, для которого проводится бой.
-     * @param pirates Финальная расстановка юнитов перед боем.
-     * @return Полный результат боя с логом и наградами.
-     */
     @PostMapping("/fight/{questKey}")
     public ResponseEntity<ApiResponse<BattleResultDto>> fight(
             @CurrentUser User user,
@@ -66,8 +64,14 @@ public class BattleController {
             @RequestBody List<BattlePirateDto> pirates) {
 
         BattleResultDto result = battleService.fight(questKey, pirates);
-
         battleLocationService.endBattle(user.getId());
+
+        // Передаём ID участников боя — только они могут получить опыт или умереть
+        Set<String> participantIds = pirates.stream()
+                .map(BattlePirateDto::getId)  // <-- тут вопрос
+                .collect(Collectors.toSet());
+
+        battleRewardService.processBattleRewards(user, result, participantIds);
 
         return ResponseEntity.ok(new ApiResponse<>(true, result));
     }

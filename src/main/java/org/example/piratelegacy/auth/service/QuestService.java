@@ -34,8 +34,6 @@ public class QuestService {
      */
     @Transactional(readOnly = true)
     public Quest findNextQuestInChain(User user, QuestChain chain, int nextOrder) {
-        // Мы ищем следующий квест в уже загруженном списке квестов цепочки,
-        // это эффективно и не требует дополнительных запросов к БД.
         return chain.getQuests().stream()
                 .filter(q -> q.getQuestOrder().equals(nextOrder))
                 .findFirst()

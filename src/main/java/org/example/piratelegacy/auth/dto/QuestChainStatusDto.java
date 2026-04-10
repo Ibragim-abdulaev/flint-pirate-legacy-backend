@@ -8,13 +8,14 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class QuestChainStatusDto implements Serializable {
     private String chainKey;
     private String title;
     private String iconUrl;
+    private String journalImageUrl;
     private int completedSteps;
     private int totalSteps;
     private boolean isAvailable;

@@ -9,7 +9,7 @@ import org.example.piratelegacy.auth.entity.enums.CombatClass;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 public class CharacterStatsDto implements Serializable {
     private CharacterType characterType;

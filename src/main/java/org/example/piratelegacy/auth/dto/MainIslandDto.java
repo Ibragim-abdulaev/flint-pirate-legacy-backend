@@ -3,17 +3,13 @@ package org.example.piratelegacy.auth.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import java.io.Serializable;
 
-@Value
 @Data
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
-public class UserResourcesDto implements Serializable {
-    Long gold;
-    Long wood;
-    Long stone;
-    Long crystals;
+@NoArgsConstructor
+public class MainIslandDto implements Serializable {
+    private UserResourcesDto resources;
+    private JournalDto journal;
 }

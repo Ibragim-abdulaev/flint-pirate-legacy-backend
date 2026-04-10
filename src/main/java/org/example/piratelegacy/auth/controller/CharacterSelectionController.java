@@ -11,7 +11,7 @@ import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.security.annotation.CurrentUser;
 import org.example.piratelegacy.auth.service.CharacterSelectionService;
 import org.example.piratelegacy.auth.service.GameConfigService;
-import org.example.piratelegacy.auth.service.UnitService; // <-- Убедитесь, что импорт есть
+import org.example.piratelegacy.auth.service.UnitService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class CharacterSelectionController {
 
     private final CharacterSelectionService characterSelectionService;
     private final GameConfigService gameConfigService;
-    private final UnitService unitService; // <-- Убедитесь, что сервис добавлен
+    private final UnitService unitService;
 
     @GetMapping("/options")
     public ResponseEntity<ApiResponse<List<CharacterOptionDto>>> getCharacterOptions() {
@@ -46,5 +46,16 @@ public class CharacterSelectionController {
         UnitProfileDto profile = unitService.getUnitProfile(newHeroUnit.getId(), user);
 
         return ResponseEntity.ok(new ApiResponse<>(true, profile));
+    }
+
+    /**
+     * НОВЫЙ ЭНДПОИНТ: Проверяет, есть ли у пользователя уже созданный главный герой.
+     * @param user Текущий пользователь.
+     * @return ApiResponse<Boolean> true, если персонаж есть, иначе false.
+     */
+    @GetMapping("/status")
+    public ResponseEntity<ApiResponse<Boolean>> checkCharacterStatus(@CurrentUser User user) {
+        boolean hasCharacter = characterSelectionService.userHasCharacter(user);
+        return ResponseEntity.ok(new ApiResponse<>(true, hasCharacter));
     }
 }

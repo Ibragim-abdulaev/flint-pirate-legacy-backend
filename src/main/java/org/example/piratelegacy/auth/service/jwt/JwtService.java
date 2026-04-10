@@ -32,7 +32,7 @@ public class JwtService {
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId())) // ID как subject
+                .setSubject(String.valueOf(user.getId()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
@@ -41,7 +41,7 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
-                .setSubject(userDetails.getUsername()) // userId
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)

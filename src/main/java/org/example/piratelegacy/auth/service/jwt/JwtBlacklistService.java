@@ -36,7 +36,7 @@ public class JwtBlacklistService {
      */
     public boolean isBlacklisted(String token) {
         String key = BLACKLIST_KEY_PREFIX + token;
-        // hasKey() - очень быстрая операция в Redis
+
         return redisService.hasKey(key);
     }
 }

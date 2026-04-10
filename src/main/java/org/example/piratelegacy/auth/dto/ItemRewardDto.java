@@ -10,8 +10,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ItemRewardDto implements Serializable {
-    private String itemKey;       // Уникальный ключ предмета (например, "ice_shard_drake")
-    private String name;          // Название для отображения ("Осколок льда Дрейка")
-    private String imageUrl;      // URL иконки предмета
-    private int quantity;         // Количество
+    private String itemKey;
+    private String name;
+    private String imageUrl;
+    private int quantity;
 }

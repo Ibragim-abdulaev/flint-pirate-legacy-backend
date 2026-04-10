@@ -51,13 +51,13 @@ public class UserInventoryService {
         for (QuestItemReward reward : rewards) {
             inventoryItemRepository.findByUserIdAndItemId(user.getId(), reward.getItem().getId())
                     .ifPresentOrElse(
-                            // Если такой предмет уже есть в инвентаре
+
                             existingItem -> {
                                 existingItem.setQuantity(existingItem.getQuantity() + reward.getQuantity());
                                 inventoryItemRepository.save(existingItem);
                                 log.info("Пользователю ID {} добавлено {}x '{}' (итого: {})", user.getId(), reward.getQuantity(), reward.getItem().getName(), existingItem.getQuantity());
                             },
-                            // Если предмета еще нет
+
                             () -> {
                                 InventoryItem newItem = InventoryItem.builder()
                                         .user(user)

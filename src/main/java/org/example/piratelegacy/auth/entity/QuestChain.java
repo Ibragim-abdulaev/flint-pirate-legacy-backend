@@ -31,6 +31,9 @@ public class QuestChain implements Serializable {
     @Column(name = "icon_url")
     private String iconUrl;
 
+    @Column(name = "journal_icon_url")
+    private String journalImageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "chain_type", nullable = false)
     private QuestChainType chainType;

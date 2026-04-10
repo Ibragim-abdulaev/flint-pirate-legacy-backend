@@ -8,7 +8,7 @@ import org.example.piratelegacy.auth.service.GameConfigService;
 import java.io.Serializable;
 
 @Data
-@AllArgsConstructor // <-- УБЕДИТЕСЬ, ЧТО ЭТА АННОТАЦИЯ ЕСТЬ
+@AllArgsConstructor
 @NoArgsConstructor
 public class CharacterOptionDto implements Serializable {
     private String characterType;
@@ -20,6 +20,9 @@ public class CharacterOptionDto implements Serializable {
     private int baseArmor;
     private String specialAbility;
     private boolean hasSpecialAbility;
+
+    public CharacterOptionDto(String name, String displayName, CharacterStatsDto characterStatsDto) {
+    }
 
     public static CharacterOptionDto fromCharacterStats(GameConfigService.CharacterStats stats) {
         return new CharacterOptionDto(

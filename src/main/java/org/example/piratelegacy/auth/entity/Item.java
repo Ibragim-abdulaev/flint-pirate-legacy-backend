@@ -27,12 +27,10 @@ public class Item implements Serializable {
     @Column(name = "image_url")
     private String imageUrl;
 
-    // Оставляем только тип предмета (оружие или броня)
     @Enumerated(EnumType.STRING)
     @Column(name = "item_type", nullable = false)
     private ItemType itemType;
 
-    // Бонусы к характеристикам
     private int bonusHp = 0;
     private int bonusDamage = 0;
     private int bonusArmor = 0;

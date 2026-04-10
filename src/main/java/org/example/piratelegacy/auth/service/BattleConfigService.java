@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -30,7 +31,7 @@ public class BattleConfigService {
         for (Resource resource : resources) {
             try (InputStream inputStream = resource.getInputStream()) {
                 LocationConfig config = objectMapper.readValue(inputStream, LocationConfig.class);
-                String locationId = resource.getFilename().replace(".json", "");
+                String locationId = Objects.requireNonNull(resource.getFilename()).replace(".json", "");
                 locationConfigs.put(locationId, config);
             }
         }

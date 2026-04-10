@@ -31,22 +31,17 @@ public class EquipmentService {
      */
     @Transactional
     @Caching(evict = {
-            // Сбрасываем кэш профиля конкретного юнита
             @CacheEvict(cacheNames = "units", key = "#unitId"),
-            // Сбрасываем кэш краткого списка команды
             @CacheEvict(cacheNames = "units", key = "'team_summary:' + #user.id")
     })
     public void equipItem(User user, Long unitId, Long inventoryItemId) {
-        // Находим юнит и проверяем, что он принадлежит пользователю
         Unit unit = unitRepository.findByIdAndOwnerId(unitId, user.getId())
                 .orElseThrow(() -> new ApiException("Юнит не найден или не принадлежит вам.", HttpStatus.NOT_FOUND));
 
-        // Находим предмет в инвентаре и проверяем, что он принадлежит пользователю
         InventoryItem itemToEquip = inventoryItemRepository.findById(inventoryItemId)
                 .filter(item -> item.getUser().getId().equals(user.getId()))
                 .orElseThrow(() -> new ApiException("Предмет в инвентаре не найден.", HttpStatus.NOT_FOUND));
 
-        // Определяем, в какой слот поместить предмет
         if (itemToEquip.getItem().getItemType() == ItemType.WEAPON) {
             unit.setEquippedWeapon(itemToEquip);
         } else if (itemToEquip.getItem().getItemType() == ItemType.ARMOR) {
