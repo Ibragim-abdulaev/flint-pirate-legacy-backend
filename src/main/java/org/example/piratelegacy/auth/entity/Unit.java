@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -52,13 +50,6 @@ public class Unit implements Serializable {
     @Column(name = "is_main_hero", nullable = false)
     @Builder.Default
     private Boolean isMainHero = false;
-
-    @Column(name = "is_alive", nullable = false)
-    @Builder.Default
-    private boolean isAlive = true;
-
-    @Column(name = "recovery_ends_at")
-    private LocalDateTime recoveryEndsAt;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipped_weapon_id")
