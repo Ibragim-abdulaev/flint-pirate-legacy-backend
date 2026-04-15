@@ -40,8 +40,177 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь",
-        "battleLocationId": "first_quest_location"
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "first_ship",
+        "questOrder": 3,
+        "title": "Первый корабль",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Линкор ему подавай, видите ли! Ступай в док и захвати своих ребят! Построй шлюпку, она то тебе и нужна для начала",
+        "objective": "Построй шлюпку в порту",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "arena_fight",
+        "questOrder": 4,
+        "title": "Бой на арене",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Ох! Вижу, в твоих глазах горит огонь сражений! Снаряди корабль и ступай на остров Старая Тропа, там старина Хазг научит тебя паре приемов.",
+        "objective": "Посади пирата на корабль",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "raise_the_dead",
+        "questOrder": 5,
+        "title": "Воскреси мертвецов",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Погиб пират в бою? Не беда - шаман поможет тебе вернуть его к жизни!",
+        "objective": "Воскреси погибшего пирата у шамана",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "grow_your_team",
+        "questOrder": 6,
+        "title": "Увеличь команду",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Не хватает войск в бою? Найми в таверне целый отряд!",
+        "objective": "Найми в таверне двух пиратов",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "throw_armor_on_pirate",
+        "questOrder": 7,
+        "title": "Набрось доспех на пирата",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Пираты голыми руками не сражаются! Оружие и крепкая броня - вот залог побед!",
+        "objective": "Вооружи пирата саблей",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "upgrade_the_boat",
+        "questOrder": 8,
+        "title": "Улучши шлюпку",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Ха! Для такой команды корабль нужен потолще! Дострой свою шлюпку, чтобы всем места хватило.",
+        "objective": "Улучши шлюпку - твоя шлюпка слишком слабая",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "win_the_battle",
+        "questOrder": 9,
+        "title": "Победи в бою",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Новобранцы пороху не нюхали? Отправь их на передовую!",
+        "objective": "Победи в бою",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "weapons",
+        "questOrder": 10,
+        "title": "Оружейная",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Да ты настоящий морской волк! Восстанови оружейную: с новым оружием к новым сражениям",
+        "objective": "Построй оружейную",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "hidden_advantage",
+        "questOrder": 11,
+        "title": "Оружейная",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Оружейную ты построил! Теперь можно и артиллерией закупаться. Купи бочонок с ромом! В бою он делает твоих пиратов сильнее.",
+        "objective": "Купи бочонок рома в оружейной",
+        "rewards": {
+          "gold": 0,
+          "experience": 300,
+          "wood": 0,
+          "stone": 0,
+          "items": []
+        },
+        "buttonText": "В путь"
+      },
+      {
+        "questKey": "mission",
+        "questOrder": 12,
+        "title": "Задание",
+        "npcName": "Старый Флинт",
+        "npcImageUrl": "/images/avatars/old_flint.png",
+        "storyText": "Рыба на обед Флинт: кстати, еще утром я посылал Хромого Пита на Лазурный риф за рыбой для обеда, но он до сих пор не вернулся. Возьми шлюпку и посмотри что случилось...",
+        "objective": "Отправиться на Лазурный риф за Питом",
+        "rewards": {
+          "gold": 1000,
+          "experience": 1000,
+          "wood": 1000,
+          "stone": 1000,
+          "items": []
+        },
+        "buttonText": "В путь"
       }
     ]
   },

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -18,9 +18,10 @@ public class UnitProfileDto implements Serializable {
     private int level;
     private long currentExperience;
     private long experienceForNextLevel;
-
+    private boolean isAlive;
+    // Только для героя, для юнитов будет null
+    private LocalDateTime recoveryEndsAt;
     private EquipmentDto equipment;
-
     private Stat totalStats;
 
     @Data

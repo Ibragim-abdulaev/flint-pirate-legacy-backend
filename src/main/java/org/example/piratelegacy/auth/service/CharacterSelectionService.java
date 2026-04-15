@@ -25,7 +25,6 @@ public class CharacterSelectionService {
     private final GameConfigService gameConfigService;
     private final UserResourcesService userResourcesService;
 
-
     @Transactional
     public Unit selectCharacter(User user, CharacterSelectionRequest request) {
         if (unitRepository.existsByOwnerId(user.getId())) {
@@ -55,11 +54,11 @@ public class CharacterSelectionService {
                 .baseMaxAttack(stats.getMaxAttack())
                 .baseArmor(stats.getBaseArmor())
                 .isMainHero(true)
+                .isAlive(true)
                 .build();
 
         Unit savedUnit = unitRepository.save(mainHeroUnit);
         log.info("Created main hero {} for user {}", savedUnit.getId(), user.getId());
-
         return savedUnit;
     }
 

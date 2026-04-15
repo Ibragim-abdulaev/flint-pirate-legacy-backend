@@ -3,8 +3,12 @@ package org.example.piratelegacy.auth.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.piratelegacy.auth.dto.*;
+import org.example.piratelegacy.auth.entity.Unit;
 import org.example.piratelegacy.auth.entity.enums.TeamType;
+import org.example.piratelegacy.auth.exception.ApiException;
 import org.example.piratelegacy.auth.exception.InvalidMoveException;
+import org.example.piratelegacy.auth.repository.UnitRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,6 +23,7 @@ public class BattleLocationService {
 
     private final RedisService redisService;
     private final BattleConfigService battleConfigService;
+    private final UnitRepository unitRepository;
 
     private static final String BATTLE_STATE_KEY_PREFIX = "battle:state:";
     private static final Duration BATTLE_STATE_TTL = Duration.ofHours(1);
@@ -42,19 +47,55 @@ public class BattleLocationService {
         List<CoordinateDto> allyPlacementCells = new ArrayList<>(initialAllyPlacementZone);
         List<CoordinateDto> enemyPlacementCells = generatePlacementZone(config.getEnemyPlacement(), config.getGridWidth(), blockedSet);
 
-        List<BattlePirateDto> pirates = new ArrayList<>();
         Collections.shuffle(allyPlacementCells);
         Collections.shuffle(enemyPlacementCells);
 
-        for (LocationConfig.SquadMember member : config.getSquad()) {
-            LocationConfig.UnitConfig unitConfig = config.getUnits().get(member.getUnitType());
-            List<CoordinateDto> placementZone = (member.getTeam() == TeamType.ALLY) ? allyPlacementCells : enemyPlacementCells;
+        List<BattlePirateDto> pirates = new ArrayList<>();
 
-            for (int i = 0; i < member.getCount(); i++) {
-                if (!placementZone.isEmpty()) {
-                    CoordinateDto position = placementZone.removeFirst();
-                    pirates.add(createPirateFromConfig(unitConfig, member.getTeam(), position));
+        // Проверяем есть ли союзники в конфиге локации
+        boolean hasAllyInConfig = config.getSquad() != null && config.getSquad().stream()
+                .anyMatch(m -> m.getTeam() == TeamType.ALLY);
+
+        if (hasAllyInConfig) {
+            // Показательный бой — союзники из конфига (UUID, опыт не начисляется)
+            log.info("Battle location '{}' uses config-based allies (showcase battle)", locationId);
+            for (LocationConfig.SquadMember member : config.getSquad()) {
+                if (member.getTeam() != TeamType.ALLY) continue;
+                LocationConfig.UnitConfig unitConfig = config.getUnits().get(member.getUnitType());
+                if (unitConfig == null) continue;
+                for (int i = 0; i < member.getCount(); i++) {
+                    if (allyPlacementCells.isEmpty()) break;
+                    CoordinateDto position = allyPlacementCells.removeFirst();
+                    pirates.add(createPirateFromConfig(unitConfig, TeamType.ALLY, position));
                 }
+            }
+        } else {
+            // Обычный бой — союзники из базы игрока с реальными ID
+            log.info("Battle location '{}' uses player's units", locationId);
+            List<Unit> aliveUnits = unitRepository.findByOwnerId(userId).stream()
+                    .filter(Unit::isAlive)
+                    .collect(Collectors.toList());
+
+            if (aliveUnits.isEmpty()) {
+                throw new ApiException("У вас нет живых юнитов для участия в бою.", HttpStatus.BAD_REQUEST);
+            }
+
+            for (Unit unit : aliveUnits) {
+                if (allyPlacementCells.isEmpty()) break;
+                CoordinateDto position = allyPlacementCells.removeFirst();
+                pirates.add(createPirateFromUnit(unit, position));
+            }
+        }
+
+        // Враги — всегда из конфига
+        for (LocationConfig.SquadMember member : config.getSquad()) {
+            if (member.getTeam() != TeamType.ENEMY) continue;
+            LocationConfig.UnitConfig unitConfig = config.getUnits().get(member.getUnitType());
+            if (unitConfig == null) continue;
+            for (int i = 0; i < member.getCount(); i++) {
+                if (enemyPlacementCells.isEmpty()) break;
+                CoordinateDto position = enemyPlacementCells.removeFirst();
+                pirates.add(createPirateFromConfig(unitConfig, TeamType.ENEMY, position));
             }
         }
 
@@ -74,9 +115,6 @@ public class BattleLocationService {
     }
 
     public List<BattlePirateDto> movePirateDuringPlacement(Long userId, PirateMoveRequestDto request) {
-        log.info("=== MOVE PIRATE DEBUG ===");
-        log.info("Target coordinates: q={}, r={}", request.getTargetQ(), request.getTargetR());
-
         String userKey = getKeyForUser(userId);
         BattleLocationDto currentLocation = redisService.get(userKey, BattleLocationDto.class);
 
@@ -84,16 +122,10 @@ public class BattleLocationService {
             throw new IllegalStateException("Состояние боя не найдено или истекло. Начните новый бой.");
         }
 
-        log.info("Ally placement zone size: {}", currentLocation.getAllyInitialPlacementZone().size());
-        log.info("Ally placement zone: {}", currentLocation.getAllyInitialPlacementZone());
-        log.info("Blocked cells size: {}", currentLocation.getBlockedCells().size());
-
         BattlePirateDto draggedPirate = currentLocation.getPirates().stream()
                 .filter(p -> p.getId().equals(request.getPirateId()))
                 .findFirst()
                 .orElseThrow(() -> new InvalidMoveException("Перемещаемый пират с ID " + request.getPirateId() + " не найден."));
-
-        log.info("Dragged pirate current position: q={}, r={}", draggedPirate.getQ(), draggedPirate.getR());
 
         if (draggedPirate.getTeam() != TeamType.ALLY) {
             throw new InvalidMoveException("Нельзя перемещать пиратов противника.");
@@ -102,16 +134,12 @@ public class BattleLocationService {
         boolean isInPlacementZone = currentLocation.getAllyInitialPlacementZone().stream()
                 .anyMatch(cell -> cell.getQ() == request.getTargetQ() && cell.getR() == request.getTargetR());
 
-        log.info("Is in placement zone: {}", isInPlacementZone);
-
         if (!isInPlacementZone) {
             throw new InvalidMoveException("Недопустимая позиция для расстановки.");
         }
 
         boolean isBlocked = currentLocation.getBlockedCells().stream()
                 .anyMatch(cell -> cell.getQ() == request.getTargetQ() && cell.getR() == request.getTargetR());
-
-        log.info("Is blocked: {}", isBlocked);
 
         if (isBlocked) {
             throw new InvalidMoveException("Нельзя разместиться в заблокированной ячейке.");
@@ -143,13 +171,30 @@ public class BattleLocationService {
         return currentLocation.getPirates();
     }
 
-    /**
-     * Удаляет состояние боя из Redis после его завершения.
-     */
     public void endBattle(Long userId) {
         redisService.delete(getKeyForUser(userId));
     }
 
+    // Союзный юнит из базы — реальный ID, опыт начисляется после боя
+    private BattlePirateDto createPirateFromUnit(Unit unit, CoordinateDto position) {
+        return new BattlePirateDto(
+                String.valueOf(unit.getId()),
+                TeamType.ALLY,
+                unit.getBaseHp(),
+                unit.getBaseMinAttack(),
+                unit.getBaseMaxAttack(),
+                unit.getBaseArmor(),
+                0,
+                position.getQ(),
+                position.getR(),
+                unit.getUnitTypeKey(),
+                3, // movement — одинаковый для всех пока
+                1, // attackSpeed
+                1  // range
+        );
+    }
+
+    // Юнит из конфига — UUID, опыт не начисляется
     private BattlePirateDto createPirateFromConfig(LocationConfig.UnitConfig config, TeamType team, CoordinateDto position) {
         return new BattlePirateDto(
                 UUID.randomUUID().toString(),
