@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +37,6 @@ public class GameConfigService {
 
     private Map<CharacterType, CharacterStats> characterStatsMap;
     private Set<CharacterType> starterCharacterTypes;
-
 
     @PostConstruct
     public void init() {
@@ -79,9 +75,7 @@ public class GameConfigService {
     }
 
     public List<CharacterStats> getStarterCharacters() {
-        if (starterCharacterTypes == null || characterStatsMap == null) {
-            return Collections.emptyList();
-        }
+        if (starterCharacterTypes == null || characterStatsMap == null) return Collections.emptyList();
         return starterCharacterTypes.stream()
                 .map(this::getCharacterStats)
                 .collect(Collectors.toList());
@@ -109,7 +103,6 @@ public class GameConfigService {
     public boolean isValidCharacterType(CharacterType characterType) {
         return starterCharacterTypes.contains(characterType);
     }
-
 
     @Data
     public static class CharacterStats implements Serializable {

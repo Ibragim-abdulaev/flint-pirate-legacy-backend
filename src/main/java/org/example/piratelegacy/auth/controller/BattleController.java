@@ -9,6 +9,7 @@ import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.exception.ApiException;
 import org.example.piratelegacy.auth.security.annotation.CurrentUser;
 import org.example.piratelegacy.auth.service.BattleLocationService;
+import org.example.piratelegacy.auth.service.BattleRewardService;
 import org.example.piratelegacy.auth.service.BattleService;
 import org.example.piratelegacy.auth.service.QuestService;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ public class BattleController {
     private final BattleLocationService battleLocationService;
     private final BattleService battleService;
     private final QuestService questService;
+    private final BattleRewardService battleRewardService;
 
     @GetMapping("/location/quest/{questKey}")
     public ResponseEntity<ApiResponse<BattleLocationDto>> getQuestBattleLocation(
@@ -39,9 +41,7 @@ public class BattleController {
         }
 
         BattleLocationDto location = battleLocationService.getOrCreateBattleLocation(
-                user.getId(),
-                quest.getBattleLocationId()
-        );
+                user.getId(), quest.getBattleLocationId());
         return ResponseEntity.ok(new ApiResponse<>(true, location));
     }
 
@@ -61,6 +61,10 @@ public class BattleController {
 
         BattleResultDto result = battleService.fight(questKey, pirates);
         battleLocationService.endBattle(user.getId());
+
+        // Начисляем опыт выжившим, помечаем погибших, начисляем опыт острову
+        battleRewardService.processBattleRewards(user, result, pirates);
+
         return ResponseEntity.ok(new ApiResponse<>(true, result));
     }
 }

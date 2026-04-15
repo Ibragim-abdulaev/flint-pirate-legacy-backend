@@ -36,7 +36,7 @@ public class QuestInitializationService implements CommandLineRunner {
     @Value("${game.config.quests-path}")
     private String questsJsonFile;
 
-    @Value("${game.quests.force-reload:false}")
+    @Value("${game.quests.force-reload:true}")
     private boolean forceReload;
 
     @Override

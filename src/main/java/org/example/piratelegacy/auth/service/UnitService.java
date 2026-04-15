@@ -24,9 +24,6 @@ public class UnitService {
 
     private final UnitRepository unitRepository;
 
-    /**
-     * Возвращает список всех юнитов в команде пользователя в кратком виде.
-     */
     @Transactional(readOnly = true)
     @Cacheable(key = "'team_summary:' + #user.id")
     public List<UnitSummaryDto> getTeamSummary(User user) {
@@ -35,8 +32,9 @@ public class UnitService {
                         .id(unit.getId())
                         .name(unit.getName())
                         .level(unit.getLevel())
-                        // TODO: У юнита должно быть поле для URL портрета
                         .portraitImageUrl("/images/" + unit.getUnitTypeKey() + ".png")
+                        .isAlive(unit.isAlive())
+                        .recoveryEndsAt(unit.getRecoveryEndsAt())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -48,37 +46,34 @@ public class UnitService {
                 .orElseThrow(() -> new IllegalStateException("Юнит не найден или не принадлежит вам."));
 
         Item weapon = unit.getEquippedWeapon() != null ? unit.getEquippedWeapon().getItem() : null;
-        Item armor = unit.getEquippedArmor() != null ? unit.getEquippedArmor().getItem() : null;
+        Item armor  = unit.getEquippedArmor()  != null ? unit.getEquippedArmor().getItem()  : null;
 
-        int bonusHp = (weapon != null ? weapon.getBonusHp() : 0) + (armor != null ? armor.getBonusHp() : 0);
+        int bonusHp     = (weapon != null ? weapon.getBonusHp()     : 0) + (armor != null ? armor.getBonusHp()     : 0);
         int bonusDamage = (weapon != null ? weapon.getBonusDamage() : 0) + (armor != null ? armor.getBonusDamage() : 0);
-        int bonusArmor = (weapon != null ? weapon.getBonusArmor() : 0) + (armor != null ? armor.getBonusArmor() : 0);
-
-        UnitProfileDto.Stat totalStats = UnitProfileDto.Stat.builder()
-                .hp(unit.getBaseHp() + bonusHp)
-                .minAttack(unit.getBaseMinAttack() + bonusDamage)
-                .maxAttack(unit.getBaseMaxAttack() + bonusDamage)
-                .armor(unit.getBaseArmor() + bonusArmor)
-                .build();
-
-        UnitProfileDto.EquipmentDto equipmentDto = UnitProfileDto.EquipmentDto.builder()
-                .weapon(weapon != null ? toItemDto(weapon) : null)
-                .armor(armor != null ? toItemDto(armor) : null)
-                .build();
+        int bonusArmor  = (weapon != null ? weapon.getBonusArmor()  : 0) + (armor != null ? armor.getBonusArmor()  : 0);
 
         return UnitProfileDto.builder()
                 .id(unit.getId())
                 .name(unit.getName())
                 .level(unit.getLevel())
                 .currentExperience(unit.getExperience())
-                .experienceForNextLevel(1000L * unit.getLevel())
-                .equipment(equipmentDto)
-                .totalStats(totalStats)
+                .experienceForNextLevel(LevelUpService.xpToNextLevel(unit.getExperience()))
+                .isAlive(unit.isAlive())
+                .recoveryEndsAt(unit.getRecoveryEndsAt())
+                .equipment(UnitProfileDto.EquipmentDto.builder()
+                        .weapon(weapon != null ? toItemDto(weapon) : null)
+                        .armor(armor  != null ? toItemDto(armor)  : null)
+                        .build())
+                .totalStats(UnitProfileDto.Stat.builder()
+                        .hp(unit.getBaseHp() + bonusHp)
+                        .minAttack(unit.getBaseMinAttack() + bonusDamage)
+                        .maxAttack(unit.getBaseMaxAttack() + bonusDamage)
+                        .armor(unit.getBaseArmor() + bonusArmor)
+                        .build())
                 .build();
     }
 
     private UnitProfileDto.ItemDto toItemDto(Item item) {
-        if (item == null) return null;
         return UnitProfileDto.ItemDto.builder()
                 .itemKey(item.getItemKey())
                 .name(item.getName())
