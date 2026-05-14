@@ -66,6 +66,13 @@ public class TavernService {
     }
 
     /**
+     * Конфиг юнита по ключу типа — используется в ShamanService для цен воскрешения.
+     */
+    public TavernUnitDto getUnitConfig(String unitTypeKey) {
+        return tavernUnitsMap.get(unitTypeKey);
+    }
+
+    /**
      * Нанимает юнита за золото или кристаллы.
      * После успешного найма проверяет и обновляет квестовый прогресс.
      */

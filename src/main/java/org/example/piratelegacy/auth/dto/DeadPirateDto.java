@@ -1,24 +1,21 @@
 package org.example.piratelegacy.auth.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TavernUnitDto implements Serializable {
-    private String unitTypeKey;
+public class DeadPirateDto implements Serializable {
+    private Long id;
     private String name;
-    private String combatClass;
-    private int baseHp;
-    private int baseMinAttack;
-    private int baseMaxAttack;
-    private int baseArmor;
-    private long goldCost;
-    private long crystalsCost;
+    private int level;
+    private String unitTypeKey;
     private long reviveGoldCost;
     private long reviveCrystalsCost;
 }

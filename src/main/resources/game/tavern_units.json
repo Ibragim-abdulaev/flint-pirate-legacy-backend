@@ -8,7 +8,9 @@
     "baseMaxAttack": 20,
     "baseArmor": 1,
     "goldCost": 350,
-    "crystalsCost": 50
+    "crystalsCost": 50,
+    "reviveGoldCost": 500,
+    "reviveCrystalsCost": 5
   },
   {
     "unitTypeKey": "THUG",
@@ -19,7 +21,9 @@
     "baseMaxAttack": 30,
     "baseArmor": 5,
     "goldCost": 350,
-    "crystalsCost": 50
+    "crystalsCost": 50,
+    "reviveGoldCost": 1500,
+    "reviveCrystalsCost": 15
   },
   {
     "unitTypeKey": "ASSASSIN",
@@ -30,7 +34,9 @@
     "baseMaxAttack": 30,
     "baseArmor": 5,
     "goldCost": 350,
-    "crystalsCost": 50
+    "crystalsCost": 50,
+    "reviveGoldCost": 1500,
+    "reviveCrystalsCost": 15
   },
   {
     "unitTypeKey": "ARCHER",
@@ -41,6 +47,8 @@
     "baseMaxAttack": 30,
     "baseArmor": 5,
     "goldCost": 350,
-    "crystalsCost": 50
+    "crystalsCost": 50,
+    "reviveGoldCost": 1500,
+    "reviveCrystalsCost": 15
   }
 ]
