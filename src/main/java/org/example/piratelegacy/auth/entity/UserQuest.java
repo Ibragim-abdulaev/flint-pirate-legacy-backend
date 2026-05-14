@@ -2,7 +2,6 @@ package org.example.piratelegacy.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.piratelegacy.auth.entity.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -30,6 +29,11 @@ public class UserQuest implements Serializable {
 
     @Column(name = "is_completed", nullable = false)
     private boolean isCompleted = false;
+
+    // Счётчик прогресса — сколько раз выполнено действие
+    @Column(name = "progress", nullable = false)
+    @Builder.Default
+    private int progress = 0;
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;

@@ -1,0 +1,9 @@
+[
+  {
+    "itemKey": "rum_barrel",
+    "name": "Бочка рома",
+    "description": "Добрый бочонок рома поднимает боевой дух пиратов.",
+    "goldCost": 200,
+    "crystalsCost": 20
+  }
+]

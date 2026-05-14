@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_units")
 public class Unit implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,6 +61,12 @@ public class Unit implements Serializable {
 
     @Column(name = "recovery_ends_at")
     private LocalDateTime recoveryEndsAt;
+
+    // NULL = свободный юнит, не на корабле
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ship_id")
+    @JsonIgnore
+    private UserShip ship;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipped_weapon_id")

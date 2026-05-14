@@ -6,10 +6,13 @@ import org.example.piratelegacy.auth.dto.CharacterOptionDto;
 import org.example.piratelegacy.auth.dto.request.CharacterSelectionRequest;
 import org.example.piratelegacy.auth.entity.Unit;
 import org.example.piratelegacy.auth.entity.User;
+import org.example.piratelegacy.auth.entity.UserBuilding;
+import org.example.piratelegacy.auth.entity.enums.BuildingType;
 import org.example.piratelegacy.auth.entity.enums.CharacterType;
 import org.example.piratelegacy.auth.exception.ApiException;
 import org.example.piratelegacy.auth.exception.ResourceNotFoundException;
 import org.example.piratelegacy.auth.repository.UnitRepository;
+import org.example.piratelegacy.auth.repository.UserBuildingRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +25,7 @@ import java.util.List;
 public class CharacterSelectionService {
 
     private final UnitRepository unitRepository;
+    private final UserBuildingRepository buildingRepository;
     private final GameConfigService gameConfigService;
     private final UserResourcesService userResourcesService;
 
@@ -59,7 +63,30 @@ public class CharacterSelectionService {
 
         Unit savedUnit = unitRepository.save(mainHeroUnit);
         log.info("Created main hero {} for user {}", savedUnit.getId(), user.getId());
+
+        // Создаём стартовые здания: Порт и Таверна — уровень 1
+        createStarterBuildings(user);
+
         return savedUnit;
+    }
+
+    private void createStarterBuildings(User user) {
+        if (!buildingRepository.existsByOwnerIdAndBuildingType(user.getId(), BuildingType.PORT)) {
+            buildingRepository.save(UserBuilding.builder()
+                    .owner(user)
+                    .buildingType(BuildingType.PORT)
+                    .level(1)
+                    .build());
+            log.info("Created PORT building for user {}", user.getId());
+        }
+        if (!buildingRepository.existsByOwnerIdAndBuildingType(user.getId(), BuildingType.TAVERN)) {
+            buildingRepository.save(UserBuilding.builder()
+                    .owner(user)
+                    .buildingType(BuildingType.TAVERN)
+                    .level(1)
+                    .build());
+            log.info("Created TAVERN building for user {}", user.getId());
+        }
     }
 
     public List<CharacterOptionDto> getCharacterOptions() {

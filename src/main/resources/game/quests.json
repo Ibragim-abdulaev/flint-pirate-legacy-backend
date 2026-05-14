@@ -40,7 +40,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "HIRE_UNIT"
       },
       {
         "questKey": "first_ship",
@@ -57,7 +58,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "BUILD_SHIP"
       },
       {
         "questKey": "arena_fight",
@@ -74,7 +76,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "ASSIGN_TO_SHIP"
       },
       {
         "questKey": "raise_the_dead",
@@ -91,7 +94,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "REVIVE_UNIT"
       },
       {
         "questKey": "grow_your_team",
@@ -108,7 +112,9 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "requiredCount": 2,
+        "triggerAction": "HIRE_UNIT"
       },
       {
         "questKey": "throw_armor_on_pirate",
@@ -125,7 +131,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "EQUIP_ITEM"
       },
       {
         "questKey": "upgrade_the_boat",
@@ -142,7 +149,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "UPGRADE_BUILDING"
       },
       {
         "questKey": "win_the_battle",
@@ -159,7 +167,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "WIN_BATTLE"
       },
       {
         "questKey": "weapons",
@@ -176,7 +185,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "UPGRADE_BUILDING"
       },
       {
         "questKey": "hidden_advantage",
@@ -193,7 +203,8 @@
           "stone": 0,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "triggerAction": "BUY_ITEM"
       },
       {
         "questKey": "mission",

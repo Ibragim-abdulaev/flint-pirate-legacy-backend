@@ -1,0 +1,26 @@
+[
+  {
+    "shipTypeKey": "sloop",
+    "name": "Шлюпка",
+    "description": "Где не проплывёт галеон, с лёгкостью пройдёт приметная шлюпка. Надёжна у контрабандистов.",
+    "baseCapacity": 2,
+    "maxLevel": 3,
+    "capacityPerLevel": 1,
+    "goldCost": 200,
+    "woodCost": 400,
+    "stoneCost": 150,
+    "crystalsCost": 50
+  },
+  {
+    "shipTypeKey": "barcass",
+    "name": "Баркас",
+    "description": "Длиной в 52 фута, баркас сохранил маневренность шлюпки, но значительно увеличил огневую мощь.",
+    "baseCapacity": 4,
+    "maxLevel": 3,
+    "capacityPerLevel": 1,
+    "goldCost": 800,
+    "woodCost": 200,
+    "stoneCost": 1200,
+    "crystalsCost": 100
+  }
+]

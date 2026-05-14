@@ -1,0 +1,46 @@
+[
+  {
+    "unitTypeKey": "pirate",
+    "name": "Пират",
+    "combatClass": "MELEE",
+    "baseHp": 100,
+    "baseMinAttack": 10,
+    "baseMaxAttack": 20,
+    "baseArmor": 1,
+    "goldCost": 350,
+    "crystalsCost": 50
+  },
+  {
+    "unitTypeKey": "THUG",
+    "name": "Головорез",
+    "combatClass": "MELEE",
+    "baseHp": 200,
+    "baseMinAttack": 15,
+    "baseMaxAttack": 30,
+    "baseArmor": 5,
+    "goldCost": 350,
+    "crystalsCost": 50
+  },
+  {
+    "unitTypeKey": "ASSASSIN",
+    "name": "Ассассин",
+    "combatClass": "MELEE",
+    "baseHp": 200,
+    "baseMinAttack": 15,
+    "baseMaxAttack": 30,
+    "baseArmor": 5,
+    "goldCost": 350,
+    "crystalsCost": 50
+  },
+  {
+    "unitTypeKey": "ARCHER",
+    "name": "Лучница",
+    "combatClass": "RANGED",
+    "baseHp": 200,
+    "baseMinAttack": 15,
+    "baseMaxAttack": 30,
+    "baseArmor": 5,
+    "goldCost": 350,
+    "crystalsCost": 50
+  }
+]

@@ -2,6 +2,7 @@ package org.example.piratelegacy.auth.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.piratelegacy.auth.entity.enums.QuestTriggerAction;
 
 import java.io.Serializable;
 import java.util.List;
@@ -66,6 +67,17 @@ public class Quest implements Serializable {
 
     @Column(name = "battle_location_id")
     private String battleLocationId;
+
+    // Сколько действий нужно для завершения (default = 1)
+    @Column(name = "required_count", nullable = false)
+    @Builder.Default
+    private int requiredCount = 1;
+
+    // Какое действие триггерит прогресс квеста.
+    // NULL = квест завершается вручную через completeQuest()
+    @Enumerated(EnumType.STRING)
+    @Column(name = "trigger_action")
+    private QuestTriggerAction triggerAction;
 
     @OneToMany(mappedBy = "quest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<QuestItemReward> itemRewards;

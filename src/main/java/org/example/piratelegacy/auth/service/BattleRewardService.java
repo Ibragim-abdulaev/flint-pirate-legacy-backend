@@ -6,6 +6,7 @@ import org.example.piratelegacy.auth.dto.BattlePirateDto;
 import org.example.piratelegacy.auth.dto.BattleResultDto;
 import org.example.piratelegacy.auth.entity.Unit;
 import org.example.piratelegacy.auth.entity.User;
+import org.example.piratelegacy.auth.entity.enums.QuestTriggerAction;
 import org.example.piratelegacy.auth.entity.enums.TeamType;
 import org.example.piratelegacy.auth.repository.UnitRepository;
 import org.springframework.stereotype.Service;
@@ -25,26 +26,23 @@ public class BattleRewardService {
     private final UnitRepository unitRepository;
     private final LevelUpService levelUpService;
     private final PlayerLevelService playerLevelService;
+    private final UserProgressService userProgressService;
 
     @Transactional
     public void processBattleRewards(User user, BattleResultDto result, List<BattlePirateDto> participants) {
         boolean playerWon = result.getWinnerTeam() == TeamType.ALLY;
         long expReward = result.getRewards() != null ? result.getRewards().getExperience() : 0;
 
-        // Определяем ID реальных юнитов из базы (числа), отфильтровываем UUID (показательный бой)
         Set<Long> realUnitIds = participants.stream()
                 .filter(p -> p.getTeam() == TeamType.ALLY)
                 .map(p -> {
-                    try {
-                        return Long.parseLong(p.getId());
-                    } catch (NumberFormatException e) {
-                        return null; // UUID — это юнит из конфига, не из базы
-                    }
+                    try { return Long.parseLong(p.getId()); }
+                    catch (NumberFormatException e) { return null; }
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        // Если нет реальных юнитов — это показательный бой, только остров получает опыт
+        // Показательный бой — только остров получает опыт
         if (realUnitIds.isEmpty()) {
             log.info("Showcase battle for user {} — no real units to reward", user.getId());
             if (playerWon && expReward > 0) {
@@ -53,12 +51,10 @@ public class BattleRewardService {
             return;
         }
 
-        // ID погибших союзников
         Set<String> deadIds = result.getYourLossesIds() != null
                 ? new HashSet<>(result.getYourLossesIds())
                 : Set.of();
 
-        // Загружаем только реальных участников боя
         List<Unit> units = unitRepository.findByOwnerIdAndIdIn(user.getId(), realUnitIds);
 
         for (Unit unit : units) {
@@ -76,7 +72,6 @@ public class BattleRewardService {
                 continue;
             }
 
-            // Выжил — начисляем опыт при победе
             if (playerWon && expReward > 0) {
                 unit.setExperience(unit.getExperience() + expReward);
                 levelUpService.checkAndApplyLevelUps(unit);
@@ -85,9 +80,13 @@ public class BattleRewardService {
             }
         }
 
-        // Остров получает опыт всегда при победе
         if (playerWon && expReward > 0) {
             playerLevelService.addExperience(user, expReward);
+        }
+
+        // Триггерим квест win_the_battle при победе
+        if (playerWon) {
+            userProgressService.handleAction(user, QuestTriggerAction.WIN_BATTLE);
         }
     }
 }

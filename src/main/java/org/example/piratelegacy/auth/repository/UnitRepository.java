@@ -1,7 +1,6 @@
 package org.example.piratelegacy.auth.repository;
 
 import org.example.piratelegacy.auth.entity.Unit;
-import org.example.piratelegacy.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
@@ -14,7 +13,6 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
 
     Optional<Unit> findByIdAndOwnerId(Long unitId, Long ownerId);
 
-    // Загрузить только конкретных юнитов владельца (участники боя)
     List<Unit> findByOwnerIdAndIdIn(Long ownerId, Collection<Long> ids);
 
     boolean existsByOwnerId(Long ownerId);
@@ -22,4 +20,8 @@ public interface UnitRepository extends JpaRepository<Unit, Long> {
     boolean existsByOwnerIdAndIsMainHeroTrue(Long ownerId);
 
     Optional<Unit> findByOwnerIdAndIsMainHeroTrue(Long ownerId);
+
+    List<Unit> findByShipId(Long shipId);
+
+    long countByShipId(Long shipId);
 }

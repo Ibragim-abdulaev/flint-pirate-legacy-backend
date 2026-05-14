@@ -6,6 +6,7 @@ import org.example.piratelegacy.auth.entity.InventoryItem;
 import org.example.piratelegacy.auth.entity.Unit;
 import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.entity.enums.ItemType;
+import org.example.piratelegacy.auth.entity.enums.QuestTriggerAction;
 import org.example.piratelegacy.auth.exception.ApiException;
 import org.example.piratelegacy.auth.repository.InventoryItemRepository;
 import org.example.piratelegacy.auth.repository.UnitRepository;
@@ -22,13 +23,8 @@ public class EquipmentService {
 
     private final UnitRepository unitRepository;
     private final InventoryItemRepository inventoryItemRepository;
+    private final UserProgressService userProgressService;
 
-    /**
-     * Экипирует предмет из инвентаря на указанного юнита.
-     * @param user Владелец
-     * @param unitId ID юнита, на которого надевается предмет
-     * @param inventoryItemId ID предмета в инвентаре
-     */
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "units", key = "#unitId"),
@@ -51,14 +47,11 @@ public class EquipmentService {
         }
 
         unitRepository.save(unit);
+
+        // Триггерим квест throw_armor_on_pirate
+        userProgressService.handleAction(user, QuestTriggerAction.EQUIP_ITEM);
     }
 
-    /**
-     * Снимает предмет с указанного юнита из указанного слота.
-     * @param user Владелец
-     * @param unitId ID юнита
-     * @param itemType Тип слота (WEAPON или ARMOR)
-     */
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "units", key = "#unitId"),
