@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.piratelegacy.auth.entity.*;
 import org.example.piratelegacy.auth.entity.enums.QuestChainType;
+import org.example.piratelegacy.auth.entity.enums.QuestTriggerAction;
 import org.example.piratelegacy.auth.repository.ItemRepository;
 import org.example.piratelegacy.auth.repository.QuestChainRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,18 +37,18 @@ public class QuestInitializationService implements CommandLineRunner {
     @Value("${game.config.quests-path}")
     private String questsJsonFile;
 
-    @Value("${game.quests.force-reload:false}")
+    @Value("${game.quests.force-reload:true}")
     private boolean forceReload;
 
     @Override
     public void run(String... args) {
         if (forceReload) {
-            log.info("Force reloading quests from JSON... All existing quests and chains will be deleted.");
+            log.info("Force reloading quests from JSON...");
             questChainRepository.deleteAllInBatch();
         }
 
         if (questChainRepository.count() == 0) {
-            log.info("No quest chains found in DB. Initializing quests from JSON file: {}", questsJsonFile);
+            log.info("Initializing quests from JSON file: {}", questsJsonFile);
             initializeQuestsFromJson();
         } else {
             log.info("Quest chains already exist in database, skipping initialization.");
@@ -96,6 +97,8 @@ public class QuestInitializationService implements CommandLineRunner {
                             .crystalsReward(stepDto.getRewards().getCrystals())
                             .buttonText(stepDto.getButtonText())
                             .battleLocationId(stepDto.getBattleLocationId())
+                            .requiredCount(stepDto.getRequiredCount())
+                            .triggerAction(stepDto.getTriggerAction())
                             .questChain(questChain)
                             .itemRewards(new ArrayList<>())
                             .build();
@@ -103,14 +106,13 @@ public class QuestInitializationService implements CommandLineRunner {
                     if (stepDto.getRewards().getItems() != null) {
                         for (ItemRewardJsonDto itemDto : stepDto.getRewards().getItems()) {
                             Item item = existingItems.computeIfAbsent(itemDto.getItemKey(), key -> {
-                                log.info("Creating new item from JSON: key='{}', name='{}'", key, itemDto.getName());
+                                log.info("Creating new item: key='{}', name='{}'", key, itemDto.getName());
                                 return itemRepository.save(Item.builder()
                                         .itemKey(key)
                                         .name(itemDto.getName())
                                         .imageUrl(itemDto.getImageUrl())
                                         .build());
                             });
-
                             QuestItemReward reward = QuestItemReward.builder()
                                     .quest(quest)
                                     .item(item)
@@ -122,17 +124,16 @@ public class QuestInitializationService implements CommandLineRunner {
                     questChain.getQuests().add(quest);
                 }
                 questChainRepository.save(questChain);
-                log.info("Successfully saved quest chain: '{}'", questChain.getTitle());
+                log.info("Saved quest chain: '{}'", questChain.getTitle());
             }
-
         } catch (Exception e) {
-            log.error("Failed to load quests from JSON file: {}", questsJsonFile, e);
+            log.error("Failed to load quests from JSON: {}", questsJsonFile, e);
         }
     }
 
     @Transactional
     public void reloadQuestsFromJson() {
-        log.info("Manual quest reload requested via admin endpoint.");
+        log.info("Manual quest reload requested.");
         questChainRepository.deleteAllInBatch();
         initializeQuestsFromJson();
     }
@@ -158,6 +159,10 @@ public class QuestInitializationService implements CommandLineRunner {
         private RewardsJsonDto rewards;
         private String buttonText;
         private String battleLocationId;
+        // Сколько действий нужно для завершения (default = 1)
+        private int requiredCount = 1;
+        // Действие которое триггерит прогресс квеста
+        private QuestTriggerAction triggerAction;
     }
 
     @Data private static class RewardsJsonDto {

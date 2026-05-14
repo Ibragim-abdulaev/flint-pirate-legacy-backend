@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "user_units")
 public class Unit implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,9 +32,11 @@ public class Unit implements Serializable {
     private String name;
 
     @Column(nullable = false)
+    @Builder.Default
     private int level = 1;
 
     @Column(nullable = false)
+    @Builder.Default
     private long experience = 0L;
 
     @Column(name = "base_hp")
@@ -50,6 +54,19 @@ public class Unit implements Serializable {
     @Column(name = "is_main_hero", nullable = false)
     @Builder.Default
     private Boolean isMainHero = false;
+
+    @Column(name = "is_alive", nullable = false)
+    @Builder.Default
+    private boolean isAlive = true;
+
+    @Column(name = "recovery_ends_at")
+    private LocalDateTime recoveryEndsAt;
+
+    // NULL = свободный юнит, не на корабле
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ship_id")
+    @JsonIgnore
+    private UserShip ship;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "equipped_weapon_id")

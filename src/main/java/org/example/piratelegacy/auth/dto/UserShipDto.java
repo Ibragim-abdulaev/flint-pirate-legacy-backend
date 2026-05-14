@@ -4,20 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.piratelegacy.auth.entity.enums.ShipMode;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class UnitSummaryDto implements Serializable {
+public class UserShipDto implements Serializable {
     private Long id;
+    private String shipTypeKey;
     private String name;
     private int level;
-    private String portraitImageUrl;
-    private boolean isAlive;
-    // Только для героя, для юнитов будет null
-    private LocalDateTime recoveryEndsAt;
+    private int capacity;
+    private int crewCount;
+    private ShipMode mode;
+    private List<UnitSummaryDto> crew;
 }

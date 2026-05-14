@@ -1,5 +1,7 @@
 package org.example.piratelegacy.auth.repository;
 
+import org.example.piratelegacy.auth.entity.Quest;
+import org.example.piratelegacy.auth.entity.User;
 import org.example.piratelegacy.auth.entity.UserQuest;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +11,11 @@ import java.util.Optional;
 
 public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
 
-        boolean existsByUserIdAndQuestId(Long userId, Long questId);
+    boolean existsByUserIdAndQuestId(Long userId, Long questId);
+
+    Optional<UserQuest> findByUserIdAndQuestId(Long userId, Long questId);
+
+    Optional<UserQuest> findByUserAndQuest(User user, Quest quest);
 
     @EntityGraph(attributePaths = {"quest.questChain"})
     List<UserQuest> findByUserIdAndIsCompletedTrue(Long userId);
