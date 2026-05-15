@@ -168,7 +168,8 @@
           "items": []
         },
         "buttonText": "В путь",
-        "triggerAction": "WIN_BATTLE"
+        "triggerAction": "WIN_BATTLE",
+        "battleLocationId": "arena_location"
       },
       {
         "questKey": "weapons",
@@ -221,7 +222,8 @@
           "stone": 1000,
           "items": []
         },
-        "buttonText": "В путь"
+        "buttonText": "В путь",
+        "battleLocationId": "lazurny_reef_location"
       }
     ]
   },
